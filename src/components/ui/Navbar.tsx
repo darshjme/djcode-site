@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Star } from "lucide-react";
 
 function GithubIcon({ size = 20 }: { size?: number }) {
   return (
@@ -22,10 +22,13 @@ const NAV_LINKS = [
   { label: "Features", href: "#features" },
   { label: "Agents", href: "#agents" },
   { label: "Models", href: "#models" },
+  { label: "Docs", href: "/docs" },
   { label: "Compare", href: "#compare" },
 ];
 
-const SECTION_IDS = NAV_LINKS.map((l) => l.href.replace("#", ""));
+const SECTION_IDS = NAV_LINKS.filter((l) => l.href.startsWith("#")).map((l) =>
+  l.href.replace("#", "")
+);
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -34,7 +37,7 @@ export default function Navbar() {
 
   /* ---- Scroll detection ---- */
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
@@ -64,12 +67,10 @@ export default function Navbar() {
     return () => observers.forEach((o) => o.disconnect());
   }, []);
 
-  /* ---- Close mobile menu on link click ---- */
   const handleLinkClick = useCallback(() => {
     setMobileOpen(false);
   }, []);
 
-  /* ---- Lock body scroll when mobile menu is open ---- */
   useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = "hidden";
@@ -88,45 +89,71 @@ export default function Navbar() {
           fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out
           ${
             scrolled
-              ? "bg-[#0a0a0a]/80 backdrop-blur-lg border-b border-white/5 py-3"
-              : "bg-transparent py-5"
+              ? "bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
+              : "bg-transparent"
           }
         `}
+        style={{ height: "64px" }}
       >
-        <div className="mx-auto max-w-[1200px] px-6 md:px-8 lg:px-12 flex items-center justify-between">
-          {/* Logo */}
-          <a href="#" className="flex items-center gap-1.5 group">
-            <span className="font-mono text-xl font-bold">
-              <span className="text-gold">DJ</span>
-              <span className="text-text-primary">code</span>
-            </span>
-            <span
-              className="ml-2 text-[11px] font-semibold tracking-wide px-2 py-0.5 rounded-full
-              border border-gold/30 text-gold/70"
-            >
-              v1.3.0
+        <div className="mx-auto max-w-[1280px] h-full px-6 md:px-8 lg:px-12 flex items-center justify-between">
+          {/* Logo group */}
+          <a href="/" className="flex flex-col group">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-2xl font-extrabold tracking-tight">
+                <span
+                  className="text-[#FFD700]"
+                  style={{ textShadow: "0 0 20px rgba(255,215,0,0.2)" }}
+                >
+                  DJ
+                </span>
+                <span className="text-white">code</span>
+              </span>
+              <span
+                className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full
+                border border-[#FFD700]/30 text-[#FFD700]/80 bg-[#FFD700]/[0.05]"
+              >
+                v2.0
+              </span>
+            </div>
+            <span className="text-[10px] text-[#FFD700]/50 font-medium tracking-wide -mt-0.5 ml-0.5">
+              by Darshankumar Joshi
             </span>
           </a>
 
           {/* Desktop center links */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-0.5">
             {NAV_LINKS.map((link) => {
-              const isActive = activeSection === link.href.replace("#", "");
+              const sectionId = link.href.replace("#", "");
+              const isActive =
+                link.href.startsWith("#") && activeSection === sectionId;
+              const isExternal = !link.href.startsWith("#");
               return (
                 <a
                   key={link.href}
                   href={link.href}
                   className={`
-                    relative px-4 py-2 text-sm font-medium transition-colors duration-200
-                    ${isActive ? "text-gold" : "text-text-secondary hover:text-text-primary"}
+                    relative px-4 py-2 text-[13px] font-medium transition-colors duration-200 rounded-lg
+                    ${
+                      isActive
+                        ? "text-[#FFD700]"
+                        : "text-[#999] hover:text-white hover:bg-white/[0.03]"
+                    }
                   `}
                 >
                   {link.label}
                   {isActive && (
                     <motion.div
                       layoutId="nav-underline"
-                      className="absolute bottom-0 left-4 right-4 h-[2px] bg-gold rounded-full"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
+                      style={{
+                        background:
+                          "linear-gradient(90deg, #FFD700, #FFAA00)",
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
                     />
                   )}
                 </a>
@@ -135,74 +162,118 @@ export default function Navbar() {
           </div>
 
           {/* Right side */}
-          <div className="flex items-center gap-3">
-            {/* GitHub */}
+          <div className="flex items-center gap-2">
+            {/* GitHub + star count */}
             <a
               href="https://github.com/darshjme/djcode"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-text-secondary hover:text-text-primary transition-colors duration-200 p-2"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[#999] hover:text-white
+                hover:bg-white/[0.04] transition-all duration-200"
               aria-label="View on GitHub"
             >
-              <GithubIcon size={20} />
+              <GithubIcon size={18} />
+              <div className="flex items-center gap-1 text-xs font-medium">
+                <Star className="w-3 h-3 fill-[#FFD700] text-[#FFD700]" />
+                <span>1.2k</span>
+              </div>
             </a>
 
             {/* Install CTA */}
             <a
               href="#install"
-              className="hidden md:inline-flex items-center px-5 py-2 rounded-lg text-sm font-semibold
-                bg-gold text-[#0a0a0a] hover:bg-gold-bright transition-colors duration-200
-                shadow-[var(--shadow-gold-sm)] hover:shadow-[var(--shadow-glow)]"
+              className="hidden md:inline-flex items-center px-6 py-2 rounded-lg text-sm font-bold
+                bg-[#FFD700] text-[#0a0a0a] hover:bg-[#FFE55C] transition-all duration-200
+                shadow-[0_2px_16px_rgba(255,215,0,0.15)] hover:shadow-[0_4px_30px_rgba(255,215,0,0.25)]"
             >
               Install
             </a>
 
             {/* Mobile hamburger */}
             <button
-              className="md:hidden p-2 text-text-secondary hover:text-text-primary transition-colors"
+              className="md:hidden p-2 text-[#999] hover:text-white transition-colors rounded-lg hover:bg-white/[0.04]"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
             >
-              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Mobile overlay */}
+      {/* Mobile fullscreen overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            className="fixed inset-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-xl flex flex-col items-center justify-center gap-6"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed inset-0 z-40 bg-[#0a0a0a]/98 backdrop-blur-2xl flex flex-col items-center justify-center gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
           >
+            {/* Narrative text at top */}
+            <motion.p
+              className="absolute top-24 text-xs text-[#FFD700]/40 font-mono tracking-wider"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              Built by Darshankumar Joshi
+            </motion.p>
+
             {NAV_LINKS.map((link, i) => (
               <motion.a
                 key={link.href}
                 href={link.href}
                 onClick={handleLinkClick}
-                className="text-2xl font-semibold text-text-primary hover:text-gold transition-colors"
-                initial={{ opacity: 0, y: 20 }}
+                className="text-3xl font-bold text-white hover:text-[#FFD700] transition-colors tracking-tight"
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08, duration: 0.3 }}
+                transition={{ delay: i * 0.06, duration: 0.3, ease: "easeOut" }}
               >
                 {link.label}
               </motion.a>
             ))}
-            <motion.a
-              href="#install"
-              onClick={handleLinkClick}
-              className="mt-4 px-8 py-3 rounded-lg text-lg font-bold bg-gold text-[#0a0a0a]
-                hover:bg-gold-bright transition-colors"
-              initial={{ opacity: 0, y: 20 }}
+
+            <motion.div
+              className="flex flex-col items-center gap-4 mt-6"
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: NAV_LINKS.length * 0.08, duration: 0.3 }}
+              transition={{ delay: NAV_LINKS.length * 0.06 + 0.1, duration: 0.3 }}
             >
-              Install
-            </motion.a>
+              <a
+                href="#install"
+                onClick={handleLinkClick}
+                className="px-10 py-3.5 rounded-xl text-lg font-extrabold bg-[#FFD700] text-[#0a0a0a]
+                  hover:bg-[#FFE55C] transition-colors shadow-[0_4px_30px_rgba(255,215,0,0.2)]"
+              >
+                Install DJcode
+              </a>
+              <a
+                href="https://github.com/darshjme/djcode"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleLinkClick}
+                className="flex items-center gap-2 text-sm text-[#888] hover:text-white transition-colors"
+              >
+                <GithubIcon size={16} />
+                <span>Star on GitHub</span>
+                <Star className="w-3 h-3 fill-[#FFD700] text-[#FFD700]" />
+                <span className="text-xs">1.2k</span>
+              </a>
+            </motion.div>
+
+            {/* Bottom narrative */}
+            <motion.p
+              className="absolute bottom-12 text-[10px] text-[#555] font-mono text-center max-w-xs leading-relaxed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              The only CLI built from ground up for local-first, zero-telemetry, Apple Silicon.
+              <br />
+              No competition. Just the tool.
+            </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
