@@ -1,187 +1,176 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback, useMemo } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useState, useCallback, useEffect } from "react";
+import {
+  motion,
+  useInView,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 
 /* -------------------------------------------------- */
 /*  Types                                             */
 /* -------------------------------------------------- */
 
-interface ModelCard {
+interface ModelData {
   name: string;
-  provider: string;
+  provider: "Ollama" | "MLX";
   providerColor: string;
+  whatIsIt: string;
   quant: string;
+  quantLabel: string;
+  ramGB: number;
+  maxRamScale: number;
   context: string;
-  ram: number;
-  maxRam: number;
+  toolCalling: boolean;
   status: string;
   statusColor: string;
-  statusDot: boolean;
-  pullCmd: string;
-  usageCmd: string;
+  statusPulse: boolean;
+  bestFor: string;
+  sizeLabel: string;
+  installCmd: string;
   note?: string;
 }
 
 /* -------------------------------------------------- */
-/*  Data                                              */
+/*  Funnel stages                                     */
 /* -------------------------------------------------- */
 
-const MODELS: ModelCard[] = [
+interface FunnelStage {
+  label: string;
+  bits: string;
+  reduction: string;
+  description: string;
+  widthPct: number;
+}
+
+const FUNNEL_STAGES: FunnelStage[] = [
+  {
+    label: "Full Precision",
+    bits: "32-bit",
+    reduction: "100%",
+    description:
+      "Original model weights at full floating-point precision. A 70B model weighs ~140GB.",
+    widthPct: 100,
+  },
+  {
+    label: "FP16 Half",
+    bits: "16-bit",
+    reduction: "50%",
+    description:
+      "Halved precision. Nearly identical quality, half the memory footprint.",
+    widthPct: 72,
+  },
+  {
+    label: "INT8 Quantized",
+    bits: "8-bit",
+    reduction: "25%",
+    description:
+      "Integer quantization. Minimal quality loss, runs on consumer GPUs.",
+    widthPct: 48,
+  },
+  {
+    label: "Q4_K_M",
+    bits: "4-bit",
+    reduction: "12%",
+    description:
+      "Aggressive quantization with smart rounding. A 70GB model fits in 4GB of RAM.",
+    widthPct: 28,
+  },
+];
+
+/* -------------------------------------------------- */
+/*  Models data                                       */
+/* -------------------------------------------------- */
+
+const MODELS: ModelData[] = [
   {
     name: "Gemma 4 E4B",
     provider: "Ollama",
     providerColor: "#34D399",
-    quant: "4-bit quantized",
-    context: "32K context",
-    ram: 4,
-    maxRam: 24,
+    whatIsIt:
+      "Google's best efficiency model. Default choice for most tasks.",
+    quant: "Q4_K_M",
+    quantLabel: "4-bit quantized",
+    ramGB: 9.6,
+    maxRamScale: 32,
+    context: "32K",
+    toolCalling: true,
     status: "Active",
     statusColor: "#34D399",
-    statusDot: true,
-    pullCmd: "ollama pull gemma4",
-    usageCmd: "djcode --model gemma4",
+    statusPulse: true,
+    bestFor: "General coding, daily driver",
+    sizeLabel: "9.6 GB",
+    installCmd: "ollama pull gemma4",
   },
   {
     name: "Gemma 4 26B MoE",
     provider: "Ollama",
     providerColor: "#34D399",
-    quant: "4-bit quantized",
-    context: "32K context",
-    ram: 16,
-    maxRam: 24,
+    whatIsIt:
+      "Mixture-of-Experts. 26B params but only activates what it needs.",
+    quant: "Q4_K_M",
+    quantLabel: "4-bit quantized",
+    ramGB: 16,
+    maxRamScale: 32,
+    context: "32K",
+    toolCalling: true,
     status: "Pro",
     statusColor: "#A78BFA",
-    statusDot: false,
-    pullCmd: "ollama pull gemma4:26b",
-    usageCmd: "djcode --model gemma4:26b",
+    statusPulse: false,
+    bestFor: "Complex reasoning, architecture planning",
+    sizeLabel: "16 GB",
+    installCmd: "ollama pull gemma4:26b",
   },
   {
     name: "Gemma 4 E4B 8-bit",
     provider: "MLX",
     providerColor: "#FFD700",
-    quant: "8-bit quantized",
-    context: "32K context",
-    ram: 8,
-    maxRam: 24,
+    whatIsIt:
+      "Native Metal acceleration via MLX. Maximum throughput on M-series.",
+    quant: "8-bit",
+    quantLabel: "8-bit quantized",
+    ramGB: 9,
+    maxRamScale: 32,
+    context: "32K",
+    toolCalling: true,
     status: "Native",
     statusColor: "#FFD700",
-    statusDot: false,
-    pullCmd: "pip install mlx-vlm",
-    usageCmd: "djcode --provider mlx",
+    statusPulse: false,
+    bestFor: "Apple Silicon speed, batch processing",
+    sizeLabel: "9 GB",
+    installCmd: "pip install mlx-vlm",
     note: "Apple Silicon only",
   },
   {
     name: "Qwen 3 32B",
     provider: "Ollama",
     providerColor: "#34D399",
-    quant: "4-bit quantized",
-    context: "128K context",
-    ram: 20,
-    maxRam: 24,
+    whatIsIt:
+      "Alibaba's long-context beast. Reads entire codebases in one shot.",
+    quant: "Q4_K_M",
+    quantLabel: "4-bit quantized",
+    ramGB: 20,
+    maxRamScale: 32,
+    context: "128K",
+    toolCalling: true,
     status: "128K",
     statusColor: "#60A5FA",
-    statusDot: false,
-    pullCmd: "ollama pull qwen3:32b",
-    usageCmd: "djcode --model qwen3:32b",
+    statusPulse: false,
+    bestFor: "Large codebases, long documents",
+    sizeLabel: "20 GB",
+    installCmd: "ollama pull qwen3:32b",
   },
 ];
 
 /* -------------------------------------------------- */
-/*  Geometric shapes generator                        */
+/*  Helpers                                           */
 /* -------------------------------------------------- */
 
-type ShapeKind = "circle" | "triangle" | "square";
-
-interface GeoShape {
-  kind: ShapeKind;
-  x: number;
-  y: number;
-  size: number;
-  rotation: number;
-  delay: number;
-}
-
-function generateShapes(seed: number): GeoShape[] {
-  let s = seed;
-  const rand = () => {
-    s = (s * 16807 + 0) % 2147483647;
-    return (s & 0x7fffffff) / 0x7fffffff;
-  };
-
-  const kinds: ShapeKind[] = ["circle", "triangle", "square"];
-  const count = 6 + Math.floor(rand() * 3);
-  const shapes: GeoShape[] = [];
-
-  for (let i = 0; i < count; i++) {
-    shapes.push({
-      kind: kinds[Math.floor(rand() * kinds.length)],
-      x: 10 + rand() * 80,
-      y: 10 + rand() * 70,
-      size: 20 + rand() * 30,
-      rotation: rand() * 360,
-      delay: rand() * 0.5,
-    });
-  }
-  return shapes;
-}
-
-/* -------------------------------------------------- */
-/*  Single Shape SVG                                  */
-/* -------------------------------------------------- */
-
-function ShapeSVG({ shape, hovered }: { shape: GeoShape; hovered: boolean }) {
-  const baseOpacity = hovered ? 0.35 : 0.1;
-  const scale = hovered ? 1.1 : 1;
-  const filter = hovered
-    ? "drop-shadow(0 0 6px rgba(255,215,0,0.4))"
-    : "none";
-
-  const style: React.CSSProperties = {
-    position: "absolute",
-    left: `${shape.x}%`,
-    top: `${shape.y}%`,
-    width: shape.size,
-    height: shape.size,
-    opacity: baseOpacity,
-    transform: `rotate(${shape.rotation}deg) scale(${scale})`,
-    filter,
-    transition: "opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease",
-    transitionDelay: `${shape.delay * 0.1}s`,
-  };
-
-  if (shape.kind === "circle") {
-    return (
-      <svg style={style} viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="16" stroke="#FFD700" strokeWidth="1.5" />
-      </svg>
-    );
-  }
-  if (shape.kind === "triangle") {
-    return (
-      <svg style={style} viewBox="0 0 40 40" fill="none">
-        <polygon
-          points="20,4 36,36 4,36"
-          stroke="#FFAA00"
-          strokeWidth="1.5"
-          fill="none"
-        />
-      </svg>
-    );
-  }
-  return (
-    <svg style={style} viewBox="0 0 40 40" fill="none">
-      <rect
-        x="6"
-        y="6"
-        width="28"
-        height="28"
-        stroke="#FF8C00"
-        strokeWidth="1.5"
-        fill="none"
-      />
-    </svg>
-  );
+function ramBarColor(gb: number): string {
+  if (gb <= 10) return "#4ADE80";
+  if (gb <= 16) return "#FFAA00";
+  return "#FF5F56";
 }
 
 /* -------------------------------------------------- */
@@ -213,30 +202,162 @@ function CopyButton({ text }: { text: string }) {
 }
 
 /* -------------------------------------------------- */
-/*  RAM bar color                                     */
+/*  Funnel visualization                              */
 /* -------------------------------------------------- */
 
-function ramColor(ram: number): string {
-  if (ram <= 8) return "#4ADE80";
-  if (ram <= 16) return "#FFAA00";
-  return "#FF5F56";
+function QuantFunnel({ inView }: { inView: boolean }) {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
+  const stageHeight = 56;
+  const gap = 6;
+  const totalHeight = FUNNEL_STAGES.length * stageHeight + (FUNNEL_STAGES.length - 1) * gap;
+  const svgWidth = 600;
+  const svgHeight = totalHeight + 20;
+
+  return (
+    <motion.div
+      className="mx-auto mb-14 w-full max-w-[640px]"
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={inView ? { opacity: 1, scale: 1 } : {}}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div className="relative">
+        <svg
+          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+          className="w-full"
+          style={{ overflow: "visible" }}
+        >
+          <defs>
+            <linearGradient id="funnel-gold" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#FFD700" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#FFAA00" stopOpacity="0.6" />
+            </linearGradient>
+            <linearGradient id="funnel-gold-hover" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#FFD700" stopOpacity="1" />
+              <stop offset="100%" stopColor="#FFAA00" stopOpacity="0.85" />
+            </linearGradient>
+            <filter id="funnel-glow">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {FUNNEL_STAGES.map((stage, i) => {
+            const y = i * (stageHeight + gap) + 10;
+            const nextWidthPct =
+              i < FUNNEL_STAGES.length - 1
+                ? FUNNEL_STAGES[i + 1].widthPct
+                : stage.widthPct * 0.6;
+
+            const topW = (stage.widthPct / 100) * (svgWidth - 40);
+            const botW = (nextWidthPct / 100) * (svgWidth - 40);
+            const cx = svgWidth / 2;
+
+            const topL = cx - topW / 2;
+            const topR = cx + topW / 2;
+            const botL = cx - botW / 2;
+            const botR = cx + botW / 2;
+
+            const isHovered = hoveredIdx === i;
+            const expandPx = isHovered ? 8 : 0;
+
+            const points = `${topL - expandPx},${y} ${topR + expandPx},${y} ${botR + expandPx * 0.6},${y + stageHeight} ${botL - expandPx * 0.6},${y + stageHeight}`;
+
+            return (
+              <g
+                key={i}
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                style={{ cursor: "pointer" }}
+              >
+                <motion.polygon
+                  points={points}
+                  fill={isHovered ? "url(#funnel-gold-hover)" : "url(#funnel-gold)"}
+                  opacity={isHovered ? 1 : 0.65 - i * 0.08}
+                  filter={isHovered ? "url(#funnel-glow)" : undefined}
+                  stroke="rgba(255,215,0,0.3)"
+                  strokeWidth="1"
+                  initial={{ scaleX: 0, opacity: 0 }}
+                  animate={
+                    inView
+                      ? { scaleX: 1, opacity: isHovered ? 1 : 0.65 - i * 0.08 }
+                      : {}
+                  }
+                  transition={{
+                    duration: 0.6,
+                    delay: i * 0.15,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  style={{ transformOrigin: `${cx}px ${y + stageHeight / 2}px` }}
+                />
+
+                {/* Stage label */}
+                <text
+                  x={cx}
+                  y={y + stageHeight / 2 - 8}
+                  textAnchor="middle"
+                  fill="white"
+                  fontSize="14"
+                  fontWeight="700"
+                  fontFamily="system-ui, sans-serif"
+                  style={{ pointerEvents: "none" }}
+                >
+                  {stage.label}
+                </text>
+
+                {/* Bits + reduction */}
+                <text
+                  x={cx}
+                  y={y + stageHeight / 2 + 12}
+                  textAnchor="middle"
+                  fill="rgba(255,255,255,0.7)"
+                  fontSize="12"
+                  fontFamily="ui-monospace, monospace"
+                  style={{ pointerEvents: "none" }}
+                >
+                  {stage.bits} — {stage.reduction} size
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+
+        {/* Tooltip */}
+        {hoveredIdx !== null && (
+          <motion.div
+            className="pointer-events-none absolute left-1/2 z-30 w-72 -translate-x-1/2 rounded-lg border border-white/10 bg-black/90 px-4 py-3 text-center text-xs leading-relaxed text-text-secondary shadow-xl backdrop-blur-md"
+            style={{
+              top: `calc(${((hoveredIdx * (stageHeight + gap) + 10 + stageHeight) / svgHeight) * 100}% + 8px)`,
+            }}
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            {FUNNEL_STAGES[hoveredIdx].description}
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
+  );
 }
 
 /* -------------------------------------------------- */
-/*  Single Model Card                                 */
+/*  Model Card                                        */
 /* -------------------------------------------------- */
 
-function ModelCardComponent({
+function ModelCard({
   model,
   index,
   inView,
 }: {
-  model: ModelCard;
+  model: ModelData;
   index: number;
   inView: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
-  const shapes = useMemo(() => generateShapes((index + 1) * 7919), [index]);
   const [barAnimated, setBarAnimated] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -255,115 +376,134 @@ function ModelCardComponent({
     return () => obs.disconnect();
   }, []);
 
-  const ramPct = Math.min((model.ram / model.maxRam) * 100, 100);
+  const ramPct = Math.min((model.ramGB / model.maxRamScale) * 100, 100);
 
   return (
     <motion.div
       ref={cardRef}
-      className="glass-card group relative flex flex-col overflow-hidden"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-xl"
+      style={{
+        boxShadow: hovered
+          ? "0 0 40px rgba(255,215,0,0.08), inset 0 1px 0 rgba(255,255,255,0.06)"
+          : "inset 0 1px 0 rgba(255,255,255,0.04)",
+        transition: "box-shadow 0.4s ease",
+      }}
       initial={{ opacity: 0, y: 30 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.15 }}
+      transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.12 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Status pill */}
+      {/* Glass highlight on hover */}
       <div
-        className="absolute right-3 top-3 z-20 flex items-center gap-1.5 rounded-sm px-2 py-0.5"
-        style={{ backgroundColor: `${model.statusColor}15` }}
-      >
-        {model.statusDot && (
-          <span
-            className="status-dot inline-block h-1.5 w-1.5 rounded-full"
-            style={{
-              backgroundColor: model.statusColor,
-              boxShadow: `0 0 4px ${model.statusColor}`,
-            }}
-          />
-        )}
-        <span
-          className="font-sans text-[11px] font-semibold uppercase tracking-[0.08em]"
-          style={{ color: model.statusColor }}
-        >
-          {model.status}
-        </span>
-      </div>
-
-      {/* Geometric header */}
-      <div
-        className="relative h-[160px] overflow-hidden"
+        className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,215,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.04) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
+          background:
+            "radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 30%), rgba(255,215,0,0.04), transparent 60%)",
         }}
-      >
-        {shapes.map((shape, si) => (
-          <ShapeSVG key={si} shape={shape} hovered={hovered} />
-        ))}
-      </div>
+      />
 
-      {/* Body */}
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        {/* Provider badge */}
-        <span
-          className="inline-block w-fit rounded px-2 py-0.5 font-sans text-[11px] font-semibold"
-          style={{
-            backgroundColor: `${model.providerColor}15`,
-            color: model.providerColor,
-          }}
-        >
-          {model.provider}
-        </span>
+      <div className="relative flex flex-1 flex-col gap-3.5 p-5">
+        {/* Top row: provider + status */}
+        <div className="flex items-center justify-between">
+          <span
+            className="inline-block rounded px-2 py-0.5 font-sans text-[11px] font-semibold"
+            style={{
+              backgroundColor: `${model.providerColor}15`,
+              color: model.providerColor,
+            }}
+          >
+            {model.provider}
+          </span>
+
+          <div
+            className="flex items-center gap-1.5 rounded-sm px-2 py-0.5"
+            style={{ backgroundColor: `${model.statusColor}15` }}
+          >
+            {model.statusPulse && (
+              <span
+                className="models-status-dot inline-block h-1.5 w-1.5 rounded-full"
+                style={{
+                  backgroundColor: model.statusColor,
+                  boxShadow: `0 0 4px ${model.statusColor}`,
+                }}
+              />
+            )}
+            <span
+              className="font-sans text-[11px] font-semibold uppercase tracking-[0.08em]"
+              style={{ color: model.statusColor }}
+            >
+              {model.status}
+            </span>
+          </div>
+        </div>
 
         {/* Model name */}
         <h4 className="font-sans text-lg font-bold text-text-primary">
           {model.name}
         </h4>
 
-        {/* Quant + context */}
-        <p className="text-xs text-text-muted">
-          {model.quant} | {model.context}
+        {/* What is it */}
+        <p className="text-sm leading-relaxed text-text-secondary">
+          {model.whatIsIt}
         </p>
+
+        {/* Tags row */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded bg-white/[0.06] px-2 py-0.5 font-mono text-[11px] text-gold-dim">
+            {model.quant}
+          </span>
+          <span className="rounded bg-white/[0.06] px-2 py-0.5 font-mono text-[11px] text-text-muted">
+            {model.context} ctx
+          </span>
+          <span className="rounded bg-white/[0.06] px-2 py-0.5 font-mono text-[11px] text-text-muted">
+            {model.sizeLabel}
+          </span>
+          {model.toolCalling && (
+            <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-400">
+              Tool Calling
+            </span>
+          )}
+        </div>
 
         {model.note && (
           <p className="text-xs font-medium text-gold-dim">{model.note}</p>
         )}
 
+        {/* Best for */}
+        <p className="text-xs text-text-muted">
+          <span className="font-semibold text-text-secondary">Best for:</span>{" "}
+          {model.bestFor}
+        </p>
+
         {/* RAM bar */}
-        <div className="mt-auto">
-          <div className="mb-1 flex items-center justify-between">
-            <span className="text-[11px] font-medium text-text-muted">RAM</span>
+        <div className="mt-auto pt-2">
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="text-[11px] font-medium text-text-muted">
+              RAM Usage
+            </span>
             <span className="text-[11px] font-medium text-text-secondary">
-              ~{model.ram}GB
+              ~{model.ramGB} GB
             </span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-white/5">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-white/[0.06]">
             <div
               className="h-full rounded-full"
               style={{
                 width: barAnimated ? `${ramPct}%` : "0%",
-                background: `linear-gradient(90deg, ${ramColor(model.ram)}, ${ramColor(model.ram)}cc)`,
+                background: `linear-gradient(90deg, ${ramBarColor(model.ramGB)}, ${ramBarColor(model.ramGB)}cc)`,
                 transition: "width 1500ms cubic-bezier(0.16, 1, 0.3, 1)",
               }}
             />
           </div>
         </div>
 
-        {/* Pull command */}
+        {/* Install command */}
         <div className="flex items-center gap-2 overflow-hidden rounded-md bg-bg-code px-3 py-2">
           <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-xs text-text-code">
-            {model.pullCmd}
+            {model.installCmd}
           </code>
-          <CopyButton text={model.pullCmd} />
-        </div>
-
-        {/* Usage command */}
-        <div className="flex items-center gap-2 overflow-hidden rounded-md bg-bg-code px-3 py-2">
-          <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-xs text-text-code">
-            {model.usageCmd}
-          </code>
-          <CopyButton text={model.usageCmd} />
+          <CopyButton text={model.installCmd} />
         </div>
       </div>
     </motion.div>
@@ -375,15 +515,37 @@ function ModelCardComponent({
 /* -------------------------------------------------- */
 
 export default function Models() {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.15 });
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sectionRef, { once: true, amount: 0.1 });
+
+  /* Scroll-linked transforms */
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  /* Zoom: 0.85 -> 1.0 as section enters, back to 0.95 as it leaves */
+  const scale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.85, 1, 1, 0.95]);
+
+  /* Parallax: content moves at 0.95x scroll speed */
+  const y = useTransform(scrollYProgress, [0, 1], ["2%", "-2%"]);
 
   return (
-    <section id="models" className="relative py-16 md:py-24" ref={ref}>
-      <div className="mx-auto max-w-[1200px] px-6 md:px-8 lg:px-12">
-        {/* Heading */}
+    <section
+      id="models"
+      className="models-section relative overflow-hidden py-16 md:py-24"
+      ref={sectionRef}
+    >
+      {/* Pulsing radial background */}
+      <div className="models-bg-pulse pointer-events-none absolute inset-0" />
+
+      <motion.div
+        className="relative z-10 mx-auto max-w-[1200px] px-6 md:px-8 lg:px-12"
+        style={{ scale, y }}
+      >
+        {/* Section heading */}
         <motion.div
-          className="mb-12 text-center md:mb-16"
+          className="mb-10 text-center md:mb-14"
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
@@ -391,15 +553,18 @@ export default function Models() {
           <h2 className="text-gradient-gold mb-4 font-sans text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.15] tracking-[-0.02em]">
             Run quantized models locally
           </h2>
-          <p className="mx-auto max-w-xl text-lg leading-relaxed text-text-secondary">
-            No API key. No internet. Just your machine and a model.
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-text-secondary">
+            How a 70GB model becomes a 4GB powerhouse that runs on your MacBook.
           </p>
         </motion.div>
 
-        {/* 2x2 Grid */}
+        {/* Quantization funnel */}
+        <QuantFunnel inView={inView} />
+
+        {/* 2x2 Model cards grid */}
         <div className="mx-auto grid max-w-[1000px] grid-cols-1 gap-4 sm:grid-cols-2">
           {MODELS.map((model, i) => (
-            <ModelCardComponent
+            <ModelCard
               key={model.name}
               model={model}
               index={i}
@@ -408,14 +573,16 @@ export default function Models() {
           ))}
         </div>
 
-        {/* RAM Guide callout */}
+        {/* RAM guide footer */}
         <motion.div
           className="mx-auto mt-10 max-w-[1000px]"
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.8 }}
         >
-          <div className="glass-card flex items-start gap-3 border-l-[3px] border-l-gold p-5">
+          <div className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] p-5 backdrop-blur-xl"
+            style={{ borderLeftWidth: 3, borderLeftColor: "#FFD700" }}
+          >
             <svg
               className="mt-0.5 h-5 w-5 shrink-0 text-gold"
               viewBox="0 0 24 24"
@@ -433,19 +600,25 @@ export default function Models() {
               <span className="font-semibold text-text-primary">
                 RAM Guide:
               </span>{" "}
-              8GB Mac = Gemma 4 E4B. 16GB = Gemma 4 26B MoE. 32GB+ = Qwen 3
-              32B. Apple Silicon users: try the MLX backend for native Metal
-              performance.
+              8GB{" "}
+              <span className="font-mono text-xs text-text-muted">→</span> 7B
+              models{" · "}16GB{" "}
+              <span className="font-mono text-xs text-text-muted">→</span>{" "}
+              9-12B models{" · "}32GB{" "}
+              <span className="font-mono text-xs text-text-muted">→</span>{" "}
+              26B MoE / 32B{" · "}64GB+{" "}
+              <span className="font-mono text-xs text-text-muted">→</span>{" "}
+              70B+
             </p>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
 
       <style jsx>{`
-        .status-dot {
-          animation: statusPulse 2s ease infinite;
+        .models-status-dot {
+          animation: modelsStatusPulse 2s ease infinite;
         }
-        @keyframes statusPulse {
+        @keyframes modelsStatusPulse {
           0%,
           100% {
             opacity: 1;
@@ -454,6 +627,23 @@ export default function Models() {
           50% {
             opacity: 0.5;
             transform: scale(1.5);
+          }
+        }
+        .models-bg-pulse {
+          background: radial-gradient(
+            ellipse 80% 60% at 50% 50%,
+            transparent 40%,
+            rgba(255, 215, 0, 0.03) 100%
+          );
+          animation: modelsBgPulse 6s ease-in-out infinite;
+        }
+        @keyframes modelsBgPulse {
+          0%,
+          100% {
+            opacity: 0.6;
+          }
+          50% {
+            opacity: 1;
           }
         }
       `}</style>
