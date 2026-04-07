@@ -1,6 +1,7 @@
 import { Hero } from "@/components/hero/Hero";
 import { SocialProof } from "@/components/social-proof/SocialProof";
 import Terminal from "@/components/terminal/Terminal";
+import { ToolRouter } from "@/components/features/ToolRouter";
 import Features from "@/components/features/Features";
 import Enhancer from "@/components/enhancer/Enhancer";
 import { Agents } from "@/components/agents/Agents";
@@ -19,6 +20,7 @@ export default function Home() {
       <Hero />
       <SocialProof />
       <Terminal />
+      <ToolRouter />
       <Features />
       <Enhancer />
       <Memory />
