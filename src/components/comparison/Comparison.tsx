@@ -7,7 +7,7 @@ import { motion, useInView } from "framer-motion";
 /*  Data                                              */
 /* -------------------------------------------------- */
 
-const COMPETITORS = ["DJcode", "Claude Code", "Gemini CLI", "Aider", "OpenCode"] as const;
+const COMPETITORS = ["DJcode", "Claude Code", "Gemini CLI", "Aider", "OpenCode", "Goose"] as const;
 
 interface Row {
   feature: string;
@@ -23,6 +23,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "Free + API costs",
       Aider: "Free + API costs",
       OpenCode: "Free + API costs",
+      Goose: "Free / Apache 2.0",
     },
   },
   {
@@ -33,6 +34,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "No",
       Aider: "Workaround",
       OpenCode: "Workaround",
+      Goose: "Candle + llama.cpp",
     },
   },
   {
@@ -43,6 +45,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "No",
       Aider: "No",
       OpenCode: "No",
+      Goose: "No",
     },
   },
   {
@@ -53,6 +56,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "No",
       Aider: "No",
       OpenCode: "No",
+      Goose: "No",
     },
   },
   {
@@ -63,6 +67,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "No",
       Aider: "Repo map",
       OpenCode: "No",
+      Goose: "No",
     },
   },
   {
@@ -73,6 +78,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "No",
       Aider: "No",
       OpenCode: "No",
+      Goose: "Extensions",
     },
   },
   {
@@ -83,6 +89,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "Opt-out",
       Aider: "Opt-in",
       OpenCode: "Opt-out",
+      Goose: "Opt-out (PostHog)",
     },
   },
   {
@@ -93,6 +100,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "No",
       Aider: "No",
       OpenCode: "No",
+      Goose: "Partial (Candle)",
     },
   },
   {
@@ -103,6 +111,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "No",
       Aider: "No",
       OpenCode: "No",
+      Goose: "No",
     },
   },
   {
@@ -113,6 +122,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "Apache 2.0",
       Aider: "Apache 2.0",
       OpenCode: "FSL-1.1",
+      Goose: "Apache 2.0",
     },
   },
   {
@@ -123,6 +133,7 @@ const ROWS: Row[] = [
       "Gemini CLI": "GEMINI.md",
       Aider: "Repo map",
       OpenCode: "SQLite",
+      Goose: "No",
     },
   },
 ];
@@ -156,7 +167,11 @@ function isPartial(val: string): boolean {
     val === "Opt-out" ||
     val === "Opt-in" ||
     val === "Repo map" ||
-    val === "Fenwick"
+    val === "Fenwick" ||
+    val === "Extensions" ||
+    val.startsWith("Opt-out (") ||
+    val.startsWith("Partial (") ||
+    val.startsWith("Candle")
   );
 }
 

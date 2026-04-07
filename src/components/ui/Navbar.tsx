@@ -112,7 +112,7 @@ export default function Navbar() {
                 className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full
                 border border-[#FFD700]/30 text-[#FFD700]/80 bg-[#FFD700]/[0.05]"
               >
-                v2.0
+                v2.0.1
               </span>
             </div>
             <span className="text-[10px] text-[#FFD700]/50 font-medium tracking-wide -mt-0.5 ml-0.5">

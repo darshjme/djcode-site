@@ -757,6 +757,9 @@ export function ToolRouter() {
             No other CLI does this.
           </span>
         </p>
+        <p className="relative mt-3 text-sm leading-relaxed text-text-muted">
+          Goose needs native tool-calling models too. DJcode&apos;s Tool Router is unique.
+        </p>
       </motion.div>
     </section>
   );
