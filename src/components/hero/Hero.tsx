@@ -3,6 +3,9 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Copy, Check, ChevronDown } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const Nucleus = dynamic(() => import("@/components/ui/Nucleus"), { ssr: false });
 
 const ASCII_ART = `    ____     _  ____          _
    |  _ \\   | |/ ___|___   __| | ___
@@ -128,6 +131,11 @@ export function Hero() {
       id="hero"
       className="relative min-h-screen flex flex-col items-center justify-center px-6 md:px-8 lg:px-12 overflow-hidden"
     >
+      {/* WebGL Nucleus shader background */}
+      <div className="absolute inset-0 z-0 opacity-40">
+        <Nucleus />
+      </div>
+
       {/* Background watermark */}
       <WatermarkColumns />
 

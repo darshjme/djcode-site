@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import Navbar from "@/components/ui/Navbar";
 import "./globals.css";
 
 const inter = Inter({
@@ -59,7 +60,8 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content="#0a0a0a" />
       </head>
-      <body className="min-h-screen bg-bg-primary text-text-primary antialiased">
+      <body className="min-h-screen bg-[#0a0a0a] text-[#F5F5F5] antialiased font-sans">
+        <Navbar />
         {children}
       </body>
     </html>
