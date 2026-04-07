@@ -1,26 +1,209 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================
+   DJcode Design System -- Custom Properties
+   ============================================ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg-primary: #0a0a0a;
+  --color-bg-elevated: #111111;
+  --color-bg-code: #0d0d1a;
+  --color-bg-surface: #161616;
+  --color-bg-hover: #1a1a1a;
+
+  --color-gold: #FFD700;
+  --color-gold-dim: #b8960a;
+  --color-gold-bright: #FFE55C;
+  --color-amber: #FFAA00;
+  --color-orange: #FF8C00;
+
+  --color-text-primary: #F5F5F5;
+  --color-text-secondary: #888888;
+  --color-text-muted: #555555;
+  --color-text-dim: #444444;
+  --color-text-code: #E0E0E0;
+
+  --color-green: #4ADE80;
+  --color-red: #FF5F56;
+  --color-blue: #60A5FA;
+  --color-purple: #A78BFA;
+  --color-emerald: #34D399;
+  --color-cyan: #22D3EE;
+
+  --color-dot-red: #FF5F56;
+  --color-dot-yellow: #FFBD2E;
+  --color-dot-green: #27C93F;
+
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  /* Glass morphism */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-hover-border: rgba(255, 215, 0, 0.20);
+  --glass-hover-shadow: rgba(255, 215, 0, 0.06);
+
+  /* Gradients */
+  --gradient-gold: linear-gradient(135deg, #FFD700, #FFAA00, #FF8C00);
+  --gradient-gold-text: linear-gradient(90deg, #FFD700, #FFAA00);
+  --gradient-glow: radial-gradient(circle, rgba(255, 215, 0, 0.15), transparent 70%);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-gold-sm: 0 2px 16px rgba(255, 215, 0, 0.06);
+  --shadow-gold-md: 0 8px 40px rgba(255, 215, 0, 0.10);
+  --shadow-gold-lg: 0 16px 64px rgba(255, 215, 0, 0.15);
+  --shadow-glow: 0 0 60px rgba(255, 215, 0, 0.20);
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0a0a0a;
+  color: #F5F5F5;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+
+::selection {
+  background: rgba(255, 215, 0, 0.30);
+  color: #FFD700;
+}
+
+::-moz-selection {
+  background: rgba(255, 215, 0, 0.30);
+  color: #FFD700;
+}
+
+/* ============================================
+   Scrollbar
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555555;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #333333 #0a0a0a;
+}
+
+/* ============================================
+   Glass Card Utility
+   ============================================ */
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--glass-hover-border);
+  box-shadow: 0 8px 40px var(--glass-hover-shadow);
+}
+
+/* ============================================
+   Gold Gradient Text
+   ============================================ */
+
+.text-gradient-gold {
+  background: var(--gradient-gold-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: var(--shadow-gold-sm);
+  }
+  50% {
+    box-shadow: var(--shadow-gold-md);
+  }
+}
+
+@keyframes glowPulseStrong {
+  0%, 100% {
+    box-shadow: var(--shadow-gold-md);
+  }
+  50% {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes scrollTextUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
