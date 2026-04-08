@@ -10,7 +10,6 @@ import Models from "@/components/models/Models";
 import Comparison from "@/components/comparison/Comparison";
 import Globe from "@/components/globe/Globe";
 import Keyboard from "@/components/keyboard/Keyboard";
-import Buddy from "@/components/buddy/Buddy";
 import { Install } from "@/components/install/Install";
 import { Footer } from "@/components/ui/Footer";
 
@@ -29,7 +28,6 @@ export default function Home() {
       <Comparison />
       <Globe />
       <Keyboard />
-      <Buddy />
       <Install />
       <Footer />
     </main>
