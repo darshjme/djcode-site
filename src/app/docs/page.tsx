@@ -418,6 +418,7 @@ djcode --no-thinking "explain this error"`}</CodeBlock>
               {[
                 ["Ollama", "Local", "None"],
                 ["MLX", "Local (Apple Silicon)", "None"],
+                ["Colibri", "Existing local server", "Optional COLI_API_KEY"],
                 ["OpenAI", "Cloud", "Required"],
                 ["Anthropic", "Cloud", "Required"],
                 ["NVIDIA NIM", "Cloud", "Required"],
@@ -445,6 +446,16 @@ djcode --no-thinking "explain this error"`}</CodeBlock>
 djcode --provider openai --model gpt-4o "explain closures"
 djcode --provider anthropic --model claude-sonnet-4-20250514 "review my code"
 djcode --provider mlx "local Apple Silicon inference"`}</CodeBlock>
+        <H3>Optional Colibri runtime</H3>
+        <P>Use an existing Colibri installation and compatible model files. DJcode adds resource planning, a guarded foreground launcher, and the coding client; it downloads no engine or weights.</P>
+        <CodeBlock>{`# Inspect your existing installation and model files
+djcode-colibri plan --launcher /path/to/colibri/c/coli --model-dir /models/existing-model --ram-gb 12
+# Preview startup without loading weights
+djcode-colibri serve --launcher /path/to/colibri/c/coli --model-dir /models/existing-model --ram-gb 12 --dry-run
+# Inspect an already running local server
+djcode-colibri check`}</CodeBlock>
+        <P>Colibri can stream model experts from disk. Lower RAM use can mean slower generation, and dense weights, context, cache, and storage still need enough capacity. The RAM budget is not an operating-system limit or a guarantee that a model fits. The guarded launcher checks native tool support before serving.</P>
+        <P><a href="https://github.com/darshjme/djcode/blob/main/docs/LOW-MEMORY-COLIBRI.md" className="text-gold underline">Colibri setup, serving commands, and limits ↗</a></P>
       </>
     ),
   },
