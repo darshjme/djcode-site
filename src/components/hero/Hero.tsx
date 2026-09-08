@@ -229,7 +229,7 @@ export function Hero() {
             className="mt-4 text-sm text-[#888] leading-relaxed"
           >
             Built by{" "}
-            <span className="text-[#FFD700] font-medium">Darshankumar Joshi</span>{" "}
+            <span className="text-[#FFD700] font-medium">Darshan Kumar Joshi</span>{" "}
             for the developer community.
           </motion.p>
 

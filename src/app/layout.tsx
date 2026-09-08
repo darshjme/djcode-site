@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     "zero telemetry",
     "DJcode",
   ],
-  authors: [{ name: "DarshJ", url: "https://darshj.ai" }],
+  authors: [{ name: "Darshan Kumar Joshi", url: "https://darshj.ai" }],
   openGraph: {
     title: "DJcode — Your terminal. An entire team.",
     description:

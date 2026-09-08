@@ -119,7 +119,7 @@ export default function Navbar() {
               </span>
             </div>
             <span className="text-[10px] text-[#FFD700]/50 font-medium tracking-wide -mt-0.5 ml-0.5">
-              by Darshankumar Joshi
+              by Darshan Kumar Joshi
             </span>
           </Link>
 
@@ -225,7 +225,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              Built by Darshankumar Joshi
+              Built by Darshan Kumar Joshi
             </motion.p>
 
             {NAV_LINKS.map((link, i) => (

@@ -64,14 +64,14 @@ export function Footer() {
 
           {/* Right: License */}
           <p className="text-text-muted text-sm">
-            MIT License. Built by DarshJ.
+            MIT License. Built by Darshan Kumar Joshi.
           </p>
         </div>
 
         {/* Bottom row */}
         <div className="text-center">
           <p className="text-text-dim text-xs">
-            &copy; 2026 DarshJ. Zero telemetry, maximum sovereignty.
+            &copy; 2026 Darshan Kumar Joshi. Zero telemetry, maximum sovereignty.
           </p>
         </div>
       </div>

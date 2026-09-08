@@ -744,11 +744,11 @@ export default function DocsPage() {
                     href="https://darshj.ai"
                     className="text-[#FFD700] hover:text-[#FFE55C] transition-colors font-semibold"
                   >
-                    Darshankumar Joshi
+                    Darshan Kumar Joshi
                   </a>
                 </p>
                 <p className="text-xs text-[#555] font-mono">
-                  DJcode &gt; Claude Code, Gemini CLI, OpenCode, Aider
+                  Local and hosted models. One terminal workflow.
                 </p>
                 <div className="mt-3 flex items-center justify-center gap-4 text-xs text-[#666]">
                   <a href="https://github.com/darshjme/djcode" className="hover:text-white transition-colors">
