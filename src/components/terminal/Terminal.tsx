@@ -314,7 +314,7 @@ export default function Terminal() {
               {past("typing-djcode") && (
                 <div>
                   <span style={{ color: "#4ADE80" }}>$ </span>
-                  <span>{djcodeTyper.done ? "djcode" : djcodeTyper.displayed}</span>
+                  <span>{step !== "typing-djcode" || djcodeTyper.done ? "djcode" : djcodeTyper.displayed}</span>
                   {step === "typing-djcode" && !djcodeTyper.done && (
                     <span className="animate-blink" style={{ color: "#FFD700" }}>
                       |
@@ -354,7 +354,7 @@ export default function Terminal() {
                 <div>
                   <span style={{ color: "#4ADE80" }}>djcode&gt; </span>
                   <span>
-                    {promptTyper.done
+                    {step !== "typing-prompt" || promptTyper.done
                       ? "fix the auth bug in login.py"
                       : promptTyper.displayed}
                   </span>
