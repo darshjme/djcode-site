@@ -354,7 +354,7 @@ export default function Enhancer() {
                 />
                 <motion.div
                   style={{ color: "#FFD700" }}
-                  animate={{ x: [0, 4, 0] }}
+                  whileInView={{ x: [0, 4, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 >
                   <svg
@@ -401,7 +401,7 @@ export default function Enhancer() {
                 />
                 <motion.div
                   style={{ color: "#FFD700" }}
-                  animate={{ y: [0, 4, 0] }}
+                  whileInView={{ y: [0, 4, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 >
                   <svg

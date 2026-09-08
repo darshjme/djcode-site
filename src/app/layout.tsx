@@ -56,11 +56,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
         <meta name="theme-color" content="#0a0a0a" />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var p="system";try{var v=localStorage.getItem("djcode-theme");if(v==="dark"||v==="light")p=v}catch(e){}var t=p==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):p;document.documentElement.dataset.theme=t;document.documentElement.dataset.themePreference=p;document.querySelector('meta[name="theme-color"]').content=t==="light"?"#f8f6ef":"#0a0a0a"})()` }} />
       </head>
-      <body className="min-h-screen bg-[#0a0a0a] text-[#F5F5F5] antialiased font-sans">
+      <body className="min-h-screen antialiased font-sans">
         <a href="#main-content" className="skip-link">Skip to content</a>
         <Navbar />
         {children}

@@ -1,3 +1,4 @@
+import AnimationBudget from "@/components/ui/AnimationBudget";
 import { Hero } from "@/components/hero/Hero";
 import { SocialProof } from "@/components/social-proof/SocialProof";
 import Terminal from "@/components/terminal/Terminal";
@@ -17,6 +18,7 @@ import { Footer } from "@/components/ui/Footer";
 export default function Home() {
   return (
     <main id="main-content" className="flex flex-col min-h-screen">
+      <AnimationBudget />
       <Hero />
       <SocialProof />
       <Terminal />

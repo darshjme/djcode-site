@@ -80,6 +80,7 @@ const MAX_VISIBLE = 12;
 function KineticLogStream() {
   const [paused, setPaused] = useState(false);
   const reducedMotion = useReducedMotion();
+  const streamRef = useRef<HTMLDivElement>(null);
   const [logs, setLogs] = useState<{ id: number; entry: LogEntry }[]>(() =>
     LOG_ENTRIES.slice(0, 6).map((entry, id) => ({ id, entry }))
   );
@@ -87,27 +88,25 @@ function KineticLogStream() {
   const idCounter = useRef(6);
 
   useEffect(() => {
-    if (paused || reducedMotion) return;
-    const interval = setInterval(() => {
-      const entry = LOG_ENTRIES[idxRef.current % LOG_ENTRIES.length];
-      idxRef.current++;
-      setLogs((prev) => {
-        const next = [
-          ...prev,
-          { id: idCounter.current++, entry },
-        ];
-        if (next.length > MAX_VISIBLE) {
-          return next.slice(next.length - MAX_VISIBLE);
-        }
-        return next;
-      });
-    }, 1500);
-
-    return () => clearInterval(interval);
+    if (paused || reducedMotion || !streamRef.current) return;
+    let interval: ReturnType<typeof setInterval> | undefined;
+    let visible = false;
+    function sync() {
+      clearInterval(interval);
+      if (!visible || document.hidden) return;
+      interval = setInterval(() => {
+        const entry = LOG_ENTRIES[idxRef.current++ % LOG_ENTRIES.length];
+        setLogs(prev => [...prev, { id: idCounter.current++, entry }].slice(-MAX_VISIBLE));
+      }, 1500);
+    }
+    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); });
+    observer.observe(streamRef.current);
+    document.addEventListener("visibilitychange", sync);
+    return () => { clearInterval(interval); observer.disconnect(); document.removeEventListener("visibilitychange", sync); };
   }, [paused, reducedMotion]);
 
   return (
-    <div className="relative w-full h-full flex flex-col">
+    <div ref={streamRef} className="relative w-full h-full flex flex-col">
       {/* macOS chrome */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06]">
         <div className="flex gap-1.5">
@@ -301,7 +300,7 @@ export function Hero() {
           <div
             className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#0d0d0d]/90 backdrop-blur-sm"
             style={{
-              boxShadow: "0 0 80px rgba(255,215,0,0.05), 0 20px 60px rgba(0,0,0,0.5)",
+              boxShadow: "var(--hero-panel-shadow)",
               minHeight: "420px",
               maxHeight: "480px",
             }}

@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef } from "react";
+import { visibleAnimation } from "@/lib/visible-animation";
 
 const SHADER_SRC = `#version 300 es
 precision highp float;
@@ -105,55 +106,34 @@ export default function Nucleus() {
     if (!program) return;
     gl.useProgram(program);
 
-    const uRes   = gl.getUniformLocation(program, "iResolution");
-    const uTime  = gl.getUniformLocation(program, "iTime");
-    const uFrame = gl.getUniformLocation(program, "iFrame");
-    const uMouse = gl.getUniformLocation(program, "iMouse");
+    const uRes = gl.getUniformLocation(program, "iResolution");
+    const uTime = gl.getUniformLocation(program, "iTime");
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
 
-    const mouse = { x: 0, y: 0, l: 0, r: 0 };
-    const onMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = rect.height - (e.clientY - rect.top);
-    };
-    canvas.addEventListener("mousemove", onMove);
-
+    // This is a soft, low-opacity background. More pixels add GPU cost, not detail.
+    const pixelBudget = mobile ? 96000 : 240000;
     const applySize = () => {
-      const dpr = Math.min(1.5, window.devicePixelRatio || 1); // Cap DPR for perf
-      const w = Math.max(1, Math.floor(canvas.clientWidth * dpr));
-      const h = Math.max(1, Math.floor(canvas.clientHeight * dpr));
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w; canvas.height = h;
-        gl.viewport(0, 0, w, h);
-      }
+      const width = Math.max(1, canvas.clientWidth);
+      const height = Math.max(1, canvas.clientHeight);
+      const scale = Math.min(1, Math.sqrt(pixelBudget / (width * height)));
+      canvas.width = Math.max(1, Math.floor(width * scale));
+      canvas.height = Math.max(1, Math.floor(height * scale));
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      draw(0);
     };
-    const ro = new ResizeObserver(() => applySize());
-    ro.observe(canvas);
-    applySize();
-
-    let raf = 0;
-    const start = performance.now();
-    let frame = 0;
-
-    function tick(now: number) {
-      const t = (now - start) / 1000;
-      frame++;
-      applySize();
-      const dpr = Math.min(1.5, window.devicePixelRatio || 1);
-      if (uRes) gl.uniform3f(uRes, canvas.width, canvas.height, dpr);
-      if (uTime) gl.uniform1f(uTime, t);
-      if (uFrame) gl.uniform1i(uFrame, frame);
-      if (uMouse) gl.uniform4f(uMouse, mouse.x, mouse.y, mouse.l, mouse.r);
-      gl.bindVertexArray(vao);
+    function draw(time: number) {
+      if (uRes) gl.uniform3f(uRes, canvas.width, canvas.height, 1);
+      if (uTime) gl.uniform1f(uTime, time / 1000);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
-      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) raf = requestAnimationFrame(tick);
     }
-    raf = requestAnimationFrame(tick);
+    const resize = new ResizeObserver(applySize);
+    resize.observe(canvas);
+    applySize();
+    const stopAnimation = visibleAnimation(canvas, draw, mobile ? 12 : 24);
 
     return () => {
-      cancelAnimationFrame(raf);
-      canvas.removeEventListener("mousemove", onMove);
-      ro.disconnect();
+      stopAnimation();
+      resize.disconnect();
       gl.deleteProgram(program);
       gl.deleteShader(vs);
       gl.deleteShader(fs);
@@ -165,7 +145,8 @@ export default function Nucleus() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
+      className="pointer-events-none absolute inset-0 w-full h-full"
+      aria-hidden="true"
       style={{ background: "black" }}
     />
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
+import { visibleAnimation } from "@/lib/visible-animation";
 import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 
@@ -26,66 +27,32 @@ const STATS = [
 
 function GlobeCanvas({ size }: { size: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const phiRef = useRef(0);
-  const globeRef = useRef<import("cobe").Globe | null>(null);
-  const rafRef = useRef<number>(0);
-
-  const initGlobe = useCallback(async () => {
-    if (!canvasRef.current) return;
-    if (!createGlobe) {
-      const cobe = await import("cobe");
-      createGlobe = cobe.default;
-    }
-
-    if (globeRef.current) {
-      globeRef.current.destroy();
-      cancelAnimationFrame(rafRef.current);
-    }
-
-    globeRef.current = createGlobe(canvasRef.current, {
-      devicePixelRatio: 2,
-      width: size * 2,
-      height: size * 2,
-      phi: 0,
-      theta: 0.3,
-      dark: 1,
-      diffuse: 1.2,
-      mapSamples: 16000,
-      mapBrightness: 6,
-      baseColor: [0.1, 0.1, 0.1],
-      markerColor: [1, 0.843, 0],
-      glowColor: [0.3, 0.25, 0],
-      markers: MARKERS,
-    });
-
-    // Auto-rotate via update loop
-    const rotate = () => {
-      phiRef.current += 0.005;
-      globeRef.current?.update({ phi: phiRef.current });
-      rafRef.current = requestAnimationFrame(rotate);
-    };
-    rafRef.current = requestAnimationFrame(rotate);
-  }, [size]);
-
   useEffect(() => {
-    initGlobe();
-    return () => {
-      globeRef.current?.destroy();
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, [initGlobe]);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{ width: size, height: size, maxWidth: "100%", aspectRatio: "1" }}
-      aria-label="Interactive globe showing DJcode works everywhere"
-    />
-  );
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    let disposed = false;
+    let globe: import("cobe").Globe | undefined;
+    let stopAnimation: (() => void) | undefined;
+    async function init() {
+      if (!createGlobe) createGlobe = (await import("cobe")).default;
+      if (disposed) return;
+      globe = createGlobe(canvas!, {
+        devicePixelRatio: 1, width: size, height: size,
+        phi: 0, theta: 0.3, dark: 1, diffuse: 1.2,
+        mapSamples: 8000, mapBrightness: 6,
+        baseColor: [0.1, 0.1, 0.1], markerColor: [1, 0.843, 0],
+        glowColor: [0.3, 0.25, 0], markers: MARKERS,
+      });
+      stopAnimation = visibleAnimation(canvas!, time => globe?.update({ phi: time * 0.0003 }), 24);
+    }
+    void init();
+    return () => { disposed = true; stopAnimation?.(); globe?.destroy(); };
+  }, [size]);
+  return <canvas ref={canvasRef} style={{ width: size, height: size, maxWidth: "100%", aspectRatio: "1" }} aria-label="Illustrative globe showing worldwide developer locations" />;
 }
 
 export default function Globe() {
-  const { ref, isInView } = useInView({ amount: 0.15 });
+  const { ref, isInView } = useInView({ amount: 0.15, once: false });
   const showGlobe = isInView;
 
   return (

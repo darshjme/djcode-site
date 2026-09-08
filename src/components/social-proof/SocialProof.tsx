@@ -10,6 +10,7 @@ function useCountUp(end: number, duration: number = 1200, active: boolean) {
   useEffect(() => {
     if (!active) return;
     const start = performance.now();
+    let frame = 0;
     function tick(now: number) {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
@@ -17,10 +18,11 @@ function useCountUp(end: number, duration: number = 1200, active: boolean) {
       const eased = 1 - Math.pow(1 - progress, 3);
       setValue(Math.round(eased * end));
       if (progress < 1) {
-        requestAnimationFrame(tick);
+        frame = requestAnimationFrame(tick);
       }
     }
-    requestAnimationFrame(tick);
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
   }, [active, end, duration]);
 
   return value;

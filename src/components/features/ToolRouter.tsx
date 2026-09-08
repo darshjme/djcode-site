@@ -338,7 +338,7 @@ function PulsingHeader({ children }: { children: React.ReactNode }) {
         color: "#FFD700",
         fontFamily: "var(--font-mono)",
       }}
-      animate={{
+      whileInView={{
         textShadow: [
           "0 0 8px rgba(255,215,0,0.3)",
           "0 0 20px rgba(255,215,0,0.6)",
@@ -563,7 +563,7 @@ export function ToolRouter() {
             >
               <motion.span
                 className="text-lg"
-                animate={{
+                whileInView={{
                   filter: [
                     "drop-shadow(0 0 4px rgba(255,215,0,0.3))",
                     "drop-shadow(0 0 12px rgba(255,215,0,0.7))",
