@@ -11,7 +11,6 @@ const INSTALL_CMD = "curl -fsSL https://cli.darshj.ai/install.sh | bash";
 
 /* ---- Log entry types & color map ---- */
 type LogType =
-  | "BUDDY"
   | "ENHANCE"
   | "ROUTE"
   | "TOOL"
@@ -24,7 +23,6 @@ type LogType =
   | "CONTENT";
 
 const TYPE_COLORS: Record<LogType, string> = {
-  BUDDY: "#FFD700",
   ENHANCE: "#4ADE80",
   ROUTE: "#A78BFA",
   TOOL: "#22D3EE",
@@ -43,7 +41,6 @@ interface LogEntry {
 }
 
 const LOG_ENTRIES: LogEntry[] = [
-  { type: "BUDDY", text: 'Mitra: "hot and ready. What\'s first?"' },
   { type: "ENHANCE", text: "*enhanced* +git state, project info [debug mode]" },
   { type: "ROUTE", text: "Semantic router -> Sherlock (debugger) [cosine: 0.94]" },
   { type: "TOOL", text: 'Sherlock -> grep "TypeError" in ./src' },
@@ -53,7 +50,6 @@ const LOG_ENTRIES: LogEntry[] = [
   { type: "TEST", text: "Agni -> pytest tests/ -v (14/14 passed)" },
   { type: "REVIEW", text: "Dharma -> [LOW] style: line 42 could use early return" },
   { type: "COMMIT", text: 'git commit -m "fix: add null guard in auth handler"' },
-  { type: "BUDDY", text: 'Mitra: "bug squashed. Test it."' },
   { type: "STATS", text: "Session: 3.2k tokens | 4 tools | 12s" },
   { type: "LAUNCH", text: "/launch DarshjDB -> Narada planning campaign..." },
   { type: "CONTENT", text: "Valmiki: writing launch blog..." },
@@ -62,7 +58,6 @@ const LOG_ENTRIES: LogEntry[] = [
 ];
 
 const TYPE_ICONS: Record<LogType, string> = {
-  BUDDY: "\u2615",
   ENHANCE: "\u2728",
   ROUTE: "\u27A1",
   TOOL: "\uD83D\uDD0E",

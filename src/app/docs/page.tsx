@@ -255,7 +255,6 @@ djcode --no-thinking "explain this error"`}</CodeBlock>
             ["/stats [7d|30d]", "Usage dashboard with activity heatmap"],
             ["/agents", "Show agent roster"],
             ["/memory", "Show memory tier stats"],
-            ["/buddy", "Show your dharmic ASCII buddy"],
             ["/skill list|add|remove", "Manage teachable skills"],
             ["/shortcuts", "Show keyboard shortcut reference"],
             ["/clear", "Clear conversation"],
@@ -519,7 +518,6 @@ djcode-colibri check`}</CodeBlock>
 \u251C\u2500\u2500 provider.py         # Provider registry and routing
 \u251C\u2500\u2500 prompt.py           # Expert system prompt + reasoning framework
 \u251C\u2500\u2500 prompt_enhancer.py  # 8-intent smart prompt enrichment
-\u251C\u2500\u2500 buddy.py            # 5 dharmic ASCII species + 3D + glitch
 \u251C\u2500\u2500 tui.py              # Keyboard shortcuts + mode system + progress
 \u251C\u2500\u2500 stats.py            # Usage dashboard with heatmap
 \u251C\u2500\u2500 errors.py           # 16-pattern error classifier + fallback

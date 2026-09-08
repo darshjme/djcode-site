@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 
 // --- Constants ---
 
@@ -19,14 +19,6 @@ const RESULT_LINES = [
   { icon: "✓", text: "Applied fix at line 87" },
   { icon: "✓", text: "Tests passing (4/4)" },
 ];
-
-const MITRA_ART_SMALL = `  (  )
- ( () )
-  \\||/
-   ||
-  _||_`;
-
-const MITRA_BUBBLE = "Surgical fix. Clean commit worthy.";
 
 // --- Helpers ---
 
@@ -62,7 +54,6 @@ type Step =
   | "spinner"
   | "results"
   | "empty2"
-  | "buddy"
   | "final-prompt";
 
 // --- Component ---
@@ -160,14 +151,7 @@ export default function Terminal() {
 
   useEffect(() => {
     if (step === "empty2") {
-      const t = setTimeout(() => setStep("buddy"), 200);
-      return () => clearTimeout(t);
-    }
-  }, [step]);
-
-  useEffect(() => {
-    if (step === "buddy") {
-      const t = setTimeout(() => setStep("final-prompt"), 1600);
+      const t = setTimeout(() => setStep("final-prompt"), 200);
       return () => clearTimeout(t);
     }
   }, [step]);
@@ -189,7 +173,6 @@ export default function Terminal() {
     "spinner",
     "results",
     "empty2",
-    "buddy",
     "final-prompt",
   ];
   const stepIndex = stepOrder.indexOf(step);
@@ -358,7 +341,7 @@ export default function Terminal() {
                     {ASCII_BANNER}
                   </pre>
                   <div style={{ color: "#888888" }}>
-                    DJcode v4.1.0 | gemma4 | ollama | Mitra the Steadfast
+                    DJcode v4.1.0 | gemma4 | ollama
                   </div>
                 </motion.div>
               )}
@@ -422,52 +405,6 @@ export default function Terminal() {
 
               {/* Empty line 2 */}
               {past("empty2") && <div>&nbsp;</div>}
-
-              {/* Buddy */}
-              <AnimatePresence>
-                {past("buddy") && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="flex gap-4 items-start"
-                  >
-                    {/* Mitra ASCII - hidden on small screens */}
-                    <pre
-                      className="hidden sm:block leading-none shrink-0"
-                      style={{
-                        color: "#FFD700",
-                        fontSize: "clamp(0.5rem, 1vw, 0.7rem)",
-                        textShadow: "0 0 6px rgba(255,215,0,0.2)",
-                      }}
-                    >
-                      {MITRA_ART_SMALL}
-                    </pre>
-                    {/* Speech bubble */}
-                    <div
-                      className="relative px-3 py-2 rounded-lg"
-                      style={{
-                        background: "rgba(255,255,255,0.03)",
-                        border: "1px solid rgba(255,215,0,0.15)",
-                        color: "#FFD700",
-                        maxWidth: 320,
-                      }}
-                    >
-                      <span
-                        className="absolute -left-2 top-3"
-                        style={{
-                          width: 0,
-                          height: 0,
-                          borderTop: "6px solid transparent",
-                          borderBottom: "6px solid transparent",
-                          borderRight: "8px solid rgba(255,215,0,0.15)",
-                        }}
-                      />
-                      &quot;{MITRA_BUBBLE}&quot;
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
 
               {/* Final prompt with blinking cursor */}
               {past("final-prompt") && (
