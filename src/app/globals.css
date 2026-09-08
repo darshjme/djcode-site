@@ -377,3 +377,5 @@ html[data-theme="light"] { --hero-panel-shadow: 0 20px 60px #54482012; --code-pa
 html[data-theme="light"] #hero canvas { opacity: .55; }
 html[data-theme="light"] :is([style*="color: #FFAA00" i], [style*="color:#FFAA00" i], [style*="color: rgb(255, 170, 0)"]) { color: #8b5a0a !important; }
 html[data-theme="light"] :is(.text-amber,.text-orange) { color: #8b5a0a; }
+html:not([data-theme="light"]) :is([style*="color: #555555" i], [style*="color:#555555" i], [style*="color: rgb(85, 85, 85)"]) { color: #96968e !important; }
+html:not([data-theme="light"]) :is([class*="text-white/30"], [class*="text-white/40"]) { color: #96968e; }
