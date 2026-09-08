@@ -358,7 +358,7 @@ export default function Terminal() {
                     {ASCII_BANNER}
                   </pre>
                   <div style={{ color: "#888888" }}>
-                    DJcode v4.0.1 | gemma4 | ollama | Mitra the Steadfast
+                    DJcode v4.0.2 | gemma4 | ollama | Mitra the Steadfast
                   </div>
                 </motion.div>
               )}
