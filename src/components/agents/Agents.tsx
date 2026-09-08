@@ -43,7 +43,7 @@ const devAgents: Agent[] = [
     icon: "\u{1F3AF}",
     type: "orchestrator",
     oneLiner: "Decomposes. Delegates. Never codes.",
-    tools: "All 8 tools",
+    tools: "Scoped tools",
     temp: "0.3",
     capabilities:
       "Decomposes tasks, delegates to agents, enforces quality gates. Never writes code directly.",
@@ -54,7 +54,7 @@ const devAgents: Agent[] = [
     icon: "\u{1F50E}",
     type: "trigger",
     oneLiner: "Read-only recon, 30 tool rounds",
-    tools: "5 (read-only)",
+    tools: "Read-only tools",
     temp: "0.3",
     capabilities:
       "Reports: summary, key files, patterns, issues, recommendations. 30 tool rounds max.",
@@ -65,7 +65,7 @@ const devAgents: Agent[] = [
     icon: "\u{1F4D0}",
     type: "planner",
     oneLiner: "Structured plans with risk analysis",
-    tools: "5 (read-only)",
+    tools: "Read-only tools",
     temp: "0.5",
     capabilities:
       "Produces structured plans: goal, constraints, design, phases, risks, acceptance criteria.",
@@ -76,7 +76,7 @@ const devAgents: Agent[] = [
     icon: "\u{1F4BB}",
     type: "action",
     oneLiner: "Full-stack across 6 languages",
-    tools: "All 8 tools",
+    tools: "Scoped tools",
     temp: "0.4",
     capabilities:
       "Python/TS/Rust/Go/Java/C++. Prefers surgical edits. Reads existing code first.",
@@ -87,7 +87,7 @@ const devAgents: Agent[] = [
     icon: "\u{1F9EA}",
     type: "action",
     oneLiner: "Happy, edge, error, boundary cases",
-    tools: "All 8 tools",
+    tools: "Scoped tools",
     temp: "0.3",
     capabilities:
       "Happy path + edge cases + error cases + boundary conditions. Runs tests after writing.",
@@ -98,7 +98,7 @@ const devAgents: Agent[] = [
     icon: "\u2705",
     type: "condition",
     oneLiner: "7-point code review checklist",
-    tools: "5 (read-only)",
+    tools: "Read-only tools",
     temp: "0.3",
     capabilities:
       "Correctness, security, performance, error handling, style, tests, dependencies.",
@@ -109,7 +109,7 @@ const devAgents: Agent[] = [
     icon: "\u267B\uFE0F",
     type: "action",
     oneLiner: "Zero behavior changes. Tests first.",
-    tools: "All 8 tools",
+    tools: "Scoped tools",
     temp: "0.3",
     capabilities:
       "Zero behavior changes guaranteed. Writes tests first if none exist. Atomic commits.",
@@ -120,7 +120,7 @@ const devAgents: Agent[] = [
     icon: "\u2601\uFE0F",
     type: "action",
     oneLiner: "Docker, CI/CD, K8s, Terraform",
-    tools: "All 8 tools",
+    tools: "Scoped tools",
     temp: "0.3",
     capabilities:
       "Docker, CI/CD, Kubernetes, Terraform, monitoring, secrets management.",
@@ -131,7 +131,7 @@ const devAgents: Agent[] = [
     icon: "\u{1F4DD}",
     type: "action",
     oneLiner: "README to architecture docs",
-    tools: "All 8 tools",
+    tools: "Scoped tools",
     temp: "0.6",
     capabilities:
       "README, API docs, architecture docs, changelogs, tutorials, inline comments.",
@@ -142,11 +142,86 @@ const devAgents: Agent[] = [
     icon: "\u{1F50D}",
     type: "action",
     oneLiner: "5-step root cause methodology",
-    tools: "All 8 tools",
+    tools: "Scoped tools",
     temp: "0.2",
     capabilities:
       "Reproduce, isolate, hypothesize, verify, fix. Always checks git diff.",
   },
+];
+
+const extendedAgents: Agent[] = [
+  {
+    "name": "Chanakya",
+    "role": "Product Strategist",
+    "icon": "\u25c7",
+    "type": "planner",
+    "oneLiner": "Product Strategist specialist",
+    "capabilities": "Scoped specialist workflow coordinated by the core orchestrator."
+  },
+  {
+    "name": "Kavach",
+    "role": "Security Compliance",
+    "icon": "\u25c7",
+    "type": "condition",
+    "oneLiner": "Security Compliance specialist",
+    "capabilities": "Scoped specialist workflow coordinated by the core orchestrator."
+  },
+  {
+    "name": "Aryabhata",
+    "role": "Data Scientist",
+    "icon": "\u25c7",
+    "type": "planner",
+    "oneLiner": "Data Scientist specialist",
+    "capabilities": "Scoped specialist workflow coordinated by the core orchestrator."
+  },
+  {
+    "name": "Indra",
+    "role": "Sre",
+    "icon": "\u25c7",
+    "type": "condition",
+    "oneLiner": "Sre specialist",
+    "capabilities": "Scoped specialist workflow coordinated by the core orchestrator."
+  },
+  {
+    "name": "Kubera",
+    "role": "Cost Optimizer",
+    "icon": "\u25c7",
+    "type": "planner",
+    "oneLiner": "Cost Optimizer specialist",
+    "capabilities": "Scoped specialist workflow coordinated by the core orchestrator."
+  },
+  {
+    "name": "Hermes",
+    "role": "Integration",
+    "icon": "\u25c7",
+    "type": "planner",
+    "oneLiner": "Integration specialist",
+    "capabilities": "Scoped specialist workflow coordinated by the core orchestrator."
+  },
+  {
+    "name": "Kamadeva",
+    "role": "Ux Workflow",
+    "icon": "\u25c7",
+    "type": "planner",
+    "oneLiner": "Ux Workflow specialist",
+    "capabilities": "Scoped specialist workflow coordinated by the core orchestrator."
+  },
+  {
+    "name": "Mitra",
+    "role": "Legal Intelligence",
+    "icon": "\u25c7",
+    "type": "condition",
+    "oneLiner": "Legal Intelligence specialist",
+    "capabilities": "Scoped specialist workflow coordinated by the core orchestrator."
+  },
+  {
+    "name": "Varuna",
+    "role": "Risk Engine",
+    "icon": "\u25c7",
+    "type": "condition",
+    "oneLiner": "Risk Engine specialist",
+    "capabilities": "Scoped specialist workflow coordinated by the core orchestrator."
+  }
 ];
 
 const contentAgents: Agent[] = [
@@ -228,11 +303,11 @@ const contentAgents: Agent[] = [
     oneLiner: "Tone guardian and brand guidelines",
   },
   {
-    name: "Daksha",
-    role: "Analytics",
+    name: "Tvastar",
+    role: "ComfyUI Expert",
     icon: "\u{1F4C8}",
     type: "planner",
-    oneLiner: "Campaign metrics and ROI tracking",
+    oneLiner: "ComfyUI workflow planning",
   },
 ];
 
@@ -504,8 +579,7 @@ export function Agents() {
           Your agent army
         </h2>
         <p className="mx-auto max-w-2xl text-lg leading-relaxed text-text-secondary">
-          22 specialists. Two orchestrators. Semantic routing dispatches the right
-          mind for the job.
+          19 core specialists, plus content workflows. Match the task to the right role and coordinate the work.
         </p>
       </motion.div>
 
@@ -528,10 +602,11 @@ export function Agents() {
         columns="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
       />
 
+      <div className="mb-16"><h3 className="mb-2 text-lg font-bold">Architecture &amp; assurance specialists</h3><p className="mb-6 text-sm text-text-secondary">Nine additional core roles for product, risk, reliability, cost, integration, and user experience.</p><div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">{extendedAgents.map(agent => <AgentCard key={agent.name} agent={agent} index={0} />)}</div></div>
       {/* === Content Agents === */}
       <AgentGrid
         title="Content Agents"
-        subtitle="12 specialists that make it go viral"
+        subtitle="12 roles for campaign plans, copy, and creative prompts"
         agents={contentAgents}
         orchestrator={contentOrchestrator}
         columns="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"

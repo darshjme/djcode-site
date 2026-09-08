@@ -140,13 +140,13 @@ export default function Nucleus() {
       frame++;
       applySize();
       const dpr = Math.min(1.5, window.devicePixelRatio || 1);
-      uRes   && gl.uniform3f(uRes, canvas.width, canvas.height, dpr);
-      uTime  && gl.uniform1f(uTime, t);
-      uFrame && gl.uniform1i(uFrame, frame);
-      uMouse && gl.uniform4f(uMouse, mouse.x, mouse.y, mouse.l, mouse.r);
+      if (uRes) gl.uniform3f(uRes, canvas.width, canvas.height, dpr);
+      if (uTime) gl.uniform1f(uTime, t);
+      if (uFrame) gl.uniform1i(uFrame, frame);
+      if (uMouse) gl.uniform4f(uMouse, mouse.x, mouse.y, mouse.l, mouse.r);
       gl.bindVertexArray(vao);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
-      raf = requestAnimationFrame(tick);
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) raf = requestAnimationFrame(tick);
     }
     raf = requestAnimationFrame(tick);
 

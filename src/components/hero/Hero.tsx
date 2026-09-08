@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { Copy, Check, ChevronDown } from "lucide-react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { Copy, Check, ChevronDown, Pause, Play } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const Nucleus = dynamic(() => import("@/components/ui/Nucleus"), { ssr: false });
@@ -78,22 +78,16 @@ const TYPE_ICONS: Record<LogType, string> = {
 const MAX_VISIBLE = 12;
 
 function KineticLogStream() {
-  const [logs, setLogs] = useState<{ id: number; entry: LogEntry }[]>([]);
-  const idxRef = useRef(0);
-  const idCounter = useRef(0);
+  const [paused, setPaused] = useState(false);
+  const reducedMotion = useReducedMotion();
+  const [logs, setLogs] = useState<{ id: number; entry: LogEntry }[]>(() =>
+    LOG_ENTRIES.slice(0, 6).map((entry, id) => ({ id, entry }))
+  );
+  const idxRef = useRef(6);
+  const idCounter = useRef(6);
 
   useEffect(() => {
-    // Seed initial logs
-    const initial: { id: number; entry: LogEntry }[] = [];
-    for (let i = 0; i < 6; i++) {
-      initial.push({
-        id: idCounter.current++,
-        entry: LOG_ENTRIES[i % LOG_ENTRIES.length],
-      });
-    }
-    setLogs(initial);
-    idxRef.current = 6;
-
+    if (paused || reducedMotion) return;
     const interval = setInterval(() => {
       const entry = LOG_ENTRIES[idxRef.current % LOG_ENTRIES.length];
       idxRef.current++;
@@ -110,7 +104,7 @@ function KineticLogStream() {
     }, 1500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [paused, reducedMotion]);
 
   return (
     <div className="relative w-full h-full flex flex-col">
@@ -122,8 +116,9 @@ function KineticLogStream() {
           <span className="w-3 h-3 rounded-full bg-[#27C93F]" />
         </div>
         <span className="ml-3 text-xs font-mono text-[#666] tracking-wide">
-          djcode — live session
+          djcode — illustrative session
         </span>
+        <button type="button" onClick={() => setPaused(value => !value)} aria-label={paused ? "Play session demo" : "Pause session demo"} className="ml-auto rounded p-1.5 text-[#999] hover:bg-white/5 hover:text-white">{paused || reducedMotion ? <Play size={12} /> : <Pause size={12} />}</button>
       </div>
 
       {/* Log area */}
@@ -204,9 +199,10 @@ export function Hero() {
       </div>
 
       {/* Main two-column layout */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center py-24 lg:py-0">
+      <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center py-28 lg:py-32">
         {/* LEFT — Marketing copy */}
         <div className="flex flex-col items-start">
+          <div className="eyebrow mb-6"><span className="status-dot" /> THE LOCAL-FIRST CODING AGENT</div>
           {/* Logo */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -224,11 +220,11 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-5 font-bold text-white leading-tight"
-            style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)" }}
+            className="mt-6 font-bold text-white leading-tight tracking-[-0.045em]"
+            style={{ fontSize: "clamp(2.5rem, 4.2vw, 4.25rem)" }}
           >
-            The last coding CLI<br />
-            you&apos;ll ever need.
+            Your terminal.<br />
+            <span className="text-gradient-gold">An entire team.</span>
           </motion.h2>
 
           {/* Builder credit */}
@@ -250,21 +246,23 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 0.6 }}
             className="mt-2 text-[#666] text-sm font-mono"
           >
-            22 agents. 38 commands. Zero telemetry. Your code stays yours.
+            Specialist agents. Real tools. Local or hosted models.
           </motion.p>
 
+          <p className="mt-6 max-w-lg text-base leading-7 text-[#aaa9a1]">From the first question to the final diff. Explore your codebase, coordinate specialists, and run the tools that move your project forward.</p>
+          <div className="mt-7 flex flex-wrap items-center gap-4"><a className="primary-action" href="#install">Start building <span aria-hidden="true">↗</span></a><a className="secondary-action" href="/docs">Read the docs <span aria-hidden="true">→</span></a></div>
           {/* Install box */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
-            className="mt-8 w-full max-w-lg"
+            className="mt-5 w-full max-w-lg"
           >
             <div
               className="glass-card px-4 py-3 flex items-center justify-between gap-3"
               style={{ animation: "glowPulse 3s ease-in-out infinite" }}
             >
-              <code className="font-mono text-sm truncate flex-1 text-left">
+              <code className="font-mono text-xs overflow-x-auto whitespace-nowrap min-w-0 flex-1 text-left">
                 <span className="text-[#4ADE80]">$</span>{" "}
                 <span className="text-[#E0E0E0]">{INSTALL_CMD}</span>
               </code>
@@ -289,7 +287,7 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 1.2 }}
             className="mt-6 text-[#555] text-xs font-mono tracking-wide uppercase"
           >
-            No competition. Just the tool.
+            Read. Reason. Build. Verify.
           </motion.p>
         </div>
 
@@ -310,6 +308,7 @@ export function Hero() {
           >
             <KineticLogStream />
           </div>
+        <div className="terminal-caption"><span><i /> TOOL-AWARE WORKFLOW</span><span>Example output · results vary</span></div>
         </motion.div>
       </div>
 

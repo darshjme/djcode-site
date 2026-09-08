@@ -6,6 +6,7 @@ import Features from "@/components/features/Features";
 import Enhancer from "@/components/enhancer/Enhancer";
 import { Agents } from "@/components/agents/Agents";
 import Memory from "@/components/memory/Memory";
+import Featherless from "@/components/models/Featherless";
 import Models from "@/components/models/Models";
 import Comparison from "@/components/comparison/Comparison";
 import Globe from "@/components/globe/Globe";
@@ -15,7 +16,7 @@ import { Footer } from "@/components/ui/Footer";
 
 export default function Home() {
   return (
-    <main className="flex flex-col min-h-screen">
+    <main id="main-content" className="flex flex-col min-h-screen">
       <Hero />
       <SocialProof />
       <Terminal />
@@ -24,6 +25,7 @@ export default function Home() {
       <Enhancer />
       <Memory />
       <Agents />
+      <Featherless />
       <Models />
       <Comparison />
       <Globe />

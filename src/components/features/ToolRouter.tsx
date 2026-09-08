@@ -136,28 +136,28 @@ const models: ModelRow[] = [
     speed: 3,
     uncensored: "Full",
     nativeTools: false,
-    djcodeResult: "Full Agent",
+    djcodeResult: "Text extraction",
   },
   {
     name: "llama3",
     speed: 3,
     uncensored: "No",
     nativeTools: false,
-    djcodeResult: "Full Agent",
+    djcodeResult: "Text extraction",
   },
   {
     name: "mistral",
     speed: 2,
     uncensored: "Mild",
     nativeTools: false,
-    djcodeResult: "Full Agent",
+    djcodeResult: "Text extraction",
   },
   {
     name: "phi3",
     speed: 3,
     uncensored: "No",
     nativeTools: false,
-    djcodeResult: "Full Agent",
+    djcodeResult: "Text extraction",
   },
   {
     name: "gemma4",
@@ -175,14 +175,6 @@ const models: ModelRow[] = [
   },
 ];
 
-function SpeedBolts({ count }: { count: number }) {
-  return (
-    <span className="text-amber">
-      {"⚡".repeat(count)}
-      <span className="opacity-20">{"⚡".repeat(3 - count)}</span>
-    </span>
-  );
-}
 
 function StatusCell({
   value,
@@ -394,7 +386,7 @@ export function ToolRouter() {
   return (
     <section
       ref={sectionRef}
-      className="relative mx-auto w-full max-w-[1200px] px-6 py-24 sm:px-8 lg:px-12"
+      className="relative mx-auto w-full max-w-[1200px] overflow-hidden px-6 py-24 sm:px-8 lg:px-12"
     >
       {/* Background glow */}
       <div
@@ -419,12 +411,10 @@ export function ToolRouter() {
           className="mb-4 text-gradient-gold font-extrabold leading-[1.15] tracking-[-0.02em]"
           style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)" }}
         >
-          Any model. Full agent.
+          More models. Real tools.
         </h2>
         <p className="mx-auto max-w-2xl text-lg leading-relaxed text-text-secondary">
-          Other CLIs need function-calling models. DJcode makes{" "}
-          <span className="text-text-primary font-medium">every</span> model an
-          agent — even uncensored ones.
+          Native tool calls when supported. Structured-text extraction when they are not. Illustrative examples below; reliability varies by model.
         </p>
       </motion.div>
 
@@ -630,13 +620,13 @@ export function ToolRouter() {
                   className="px-2 py-3 text-center text-xs sm:text-sm font-semibold text-text-secondary"
                   style={{ fontFamily: "var(--font-mono)" }}
                 >
-                  Speed
+                  Runtime
                 </th>
                 <th
                   className="px-2 py-3 text-center text-xs sm:text-sm font-semibold text-text-secondary"
                   style={{ fontFamily: "var(--font-mono)" }}
                 >
-                  Uncensored
+                  Policy
                 </th>
                 <th
                   className="px-2 py-3 text-center text-xs sm:text-sm font-semibold text-text-secondary"
@@ -667,7 +657,7 @@ export function ToolRouter() {
 
                   {/* Speed */}
                   <td className="px-2 py-3 text-center">
-                    <SpeedBolts count={model.speed} />
+                    <span className="text-xs text-text-secondary">Model-dependent</span>
                   </td>
 
                   {/* Uncensored */}
@@ -684,11 +674,7 @@ export function ToolRouter() {
                         fontFamily: "var(--font-mono)",
                       }}
                     >
-                      {model.uncensored === "Full"
-                        ? "\u2713 Full"
-                        : model.uncensored === "Mild"
-                          ? "~ Mild"
-                          : "\u2717 No"}
+                      Model-dependent
                     </span>
                   </td>
 
@@ -740,25 +726,12 @@ export function ToolRouter() {
 
         <p className="relative text-base sm:text-lg leading-relaxed text-text-secondary">
           <span className="font-bold text-text-primary">
-            The uncensored + fast combo:
+            A second path to real tools:
           </span>{" "}
-          dolphin3 at{" "}
-          <span
-            className="font-mono font-bold"
-            style={{
-              color: "#FFD700",
-              textShadow: "0 0 12px rgba(255, 215, 0, 0.4)",
-            }}
-          >
-            50+ tok/s
-          </span>
-          , never refuses, AND creates files, installs packages, runs commands.{" "}
-          <span className="font-semibold text-text-primary">
-            No other CLI does this.
-          </span>
+          Models without native tool calling can use structured text that DJcode parses into tool requests. Execution still follows the same permission checks.
         </p>
         <p className="relative mt-3 text-sm leading-relaxed text-text-muted">
-          Goose needs native tool-calling models too. DJcode&apos;s Tool Router is unique.
+          Model output quality affects tool routing. Review requests and results, especially with unfamiliar models.
         </p>
       </motion.div>
     </section>

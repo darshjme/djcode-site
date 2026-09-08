@@ -36,23 +36,19 @@ function useTypewriter(
   active: boolean
 ): { displayed: string; done: boolean } {
   const [index, setIndex] = useState(0);
-  const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (!active) {
-      setIndex(0);
-      setDone(false);
-      return;
-    }
-    if (index >= text.length) {
-      setDone(true);
-      return;
-    }
-    const timer = setTimeout(() => setIndex((i) => i + 1), speed);
-    return () => clearTimeout(timer);
-  }, [index, text, speed, active]);
+    let position = 0;
+    const timer = setInterval(() => {
+      if (!active) { setIndex(0); clearInterval(timer); return; }
+      position += 1;
+      setIndex(position);
+      if (position >= text.length) clearInterval(timer);
+    }, speed);
+    return () => clearInterval(timer);
+  }, [text, speed, active]);
 
-  return { displayed: text.slice(0, index), done };
+  return { displayed: active ? text.slice(0, index) : "", done: active && index >= text.length };
 }
 
 // --- Sequence Steps ---
@@ -201,6 +197,7 @@ export default function Terminal() {
 
   return (
     <section
+      aria-label="Illustrative coding session demo"
       id="demo"
       className="relative py-16 md:py-24 px-6 md:px-8"
     >
@@ -224,13 +221,13 @@ export default function Terminal() {
               WebkitTextFillColor: "transparent",
             }}
           >
-            See it in action
+            See the workflow
           </h2>
           <p
             className="mt-3"
             style={{ fontSize: "1.125rem", color: "#888888", lineHeight: 1.7 }}
           >
-            One prompt. Full context. Real results.
+            An illustrative walkthrough of reading, editing, and testing code.
           </p>
         </motion.div>
 
@@ -361,7 +358,7 @@ export default function Terminal() {
                     {ASCII_BANNER}
                   </pre>
                   <div style={{ color: "#888888" }}>
-                    DJcode v1.3.0 | gemma4 | ollama | Mitra the Steadfast
+                    DJcode v4.0.1 | gemma4 | ollama | Mitra the Steadfast
                   </div>
                 </motion.div>
               )}

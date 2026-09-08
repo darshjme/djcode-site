@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 
@@ -19,9 +19,9 @@ const MARKERS = [
 ];
 
 const STATS = [
-  { value: "100%", label: "Local inference" },
-  { value: "0 bytes", label: "Sent to cloud" },
-  { value: "9", label: "Providers supported" },
+  { value: "Local", label: "Ollama + MLX" },
+  { value: "Cloud", label: "Your provider choice" },
+  { value: "Open", label: "MIT licensed" },
 ];
 
 function GlobeCanvas({ size }: { size: number }) {
@@ -86,11 +86,7 @@ function GlobeCanvas({ size }: { size: number }) {
 
 export default function Globe() {
   const { ref, isInView } = useInView({ amount: 0.15 });
-  const [showGlobe, setShowGlobe] = useState(false);
-
-  useEffect(() => {
-    if (isInView) setShowGlobe(true);
-  }, [isInView]);
+  const showGlobe = isInView;
 
   return (
     <section
@@ -145,13 +141,11 @@ export default function Globe() {
             >
               Works everywhere.
               <br />
-              Runs nowhere but your machine.
+              Build wherever you are.
             </h2>
 
             <p className="mt-6 text-text-secondary text-lg leading-relaxed max-w-lg mx-auto xl:mx-0">
-              San Francisco, London, Tokyo, Bangalore, Singapore — developers
-              everywhere trust DJcode for local-first AI coding. Your code never
-              leaves your hardware.
+              A terminal, your project, and a model you choose. Keep inference on-device with local models, or connect a hosted provider when your workflow calls for it. Globe markers are illustrative.
             </p>
 
             {/* Stats row */}

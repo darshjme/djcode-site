@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 
 // --- Constants ---
@@ -23,9 +23,9 @@ const DEBUG_LINES = [
 const REQUEST_LINES = ["fix the bug in login.py"];
 
 const STATS = [
-  { value: 14, suffix: "x", label: "More context" },
-  { value: 87, suffix: "%", label: "First-attempt fix rate" },
-  { value: 0, suffix: "ms", label: "Added latency" },
+  { value: 8, suffix: "", label: "Intent modes" },
+  { value: 3, suffix: "", label: "Context sources" },
+  { value: 0, suffix: "", label: "Extra model calls" },
 ];
 
 // --- Hooks ---
@@ -42,7 +42,6 @@ function useHyperText(
 
   useEffect(() => {
     if (!active) {
-      setOutput("");
       return;
     }
     startRef.current = performance.now();
@@ -89,7 +88,6 @@ function useMiniScramble(
 
   useEffect(() => {
     if (!active) {
-      setOutputs(lines.map(() => ""));
       return;
     }
 
@@ -132,9 +130,9 @@ function useMiniScramble(
       clearTimeout(timeout);
       cancelAnimationFrame(frameRef.current);
     };
-  }, [active, joinedText, delay]);
+  }, [active, joinedText, delay, lines]);
 
-  return outputs;
+  return active ? outputs : lines.map(() => "");
 }
 
 /** Count-up animation */
@@ -147,11 +145,9 @@ function useCountUp(
 
   useEffect(() => {
     if (!active) {
-      setValue(0);
       return;
     }
     if (target === 0) {
-      setValue(0);
       return;
     }
     const start = performance.now();
@@ -172,7 +168,7 @@ function useCountUp(
     return () => cancelAnimationFrame(frame);
   }, [target, active, duration]);
 
-  return value;
+  return active ? value : 0;
 }
 
 // --- Sub-card component ---
@@ -254,7 +250,7 @@ export default function Enhancer() {
     <section
       id="enhancer"
       ref={sectionRef}
-      className="relative py-16 md:py-24 px-6 md:px-8"
+      className="relative overflow-hidden py-16 md:py-24 px-6 md:px-8"
     >
       <div className="mx-auto max-w-[1200px]">
         {/* Section heading */}

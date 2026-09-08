@@ -64,7 +64,7 @@ const PIPELINE_NODES = [
     type: "endpoint" as const,
     icon: "✦",
     name: "Context Injected",
-    description: "Relevant past context fed to every prompt",
+    description: "Relevant saved context for model requests",
     color: "#D4A853",
     glowColor: "rgba(212, 168, 83, 0.4)",
   },
@@ -79,7 +79,7 @@ const CONNECTIONS = [
 
 const STATS = [
   { label: "tiers", value: 3 },
-  { label: "memory", value: "Infinite" },
+  { label: "memory", value: "Local" },
   { label: "cloud", value: "Zero" },
 ];
 
@@ -178,7 +178,7 @@ export default function Memory() {
           animate={inView ? "visible" : "hidden"}
         >
           <h2 className="text-gradient-gold mb-4 font-sans text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.15] tracking-[-0.02em]">
-            Memory that never forgets
+            Context worth keeping
           </h2>
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-text-secondary">
             3-tier architecture. Every session builds your AI&apos;s understanding
@@ -374,10 +374,9 @@ export default function Memory() {
               </span>
               <p className="text-sm leading-relaxed text-text-secondary">
                 <span className="font-semibold text-text-primary">
-                  Auto-learning:
+                  Context retrieval:
                 </span>{" "}
-                Every session makes DJcode smarter. Patterns extracted. Context
-                remembered. No cloud required.
+                Save useful facts and retrieve relevant prior context. Local storage is bounded by your disk and configured retention.
               </p>
             </div>
           </div>

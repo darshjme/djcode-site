@@ -146,7 +146,7 @@ export default function Buddy() {
   // Render ASCII art with eye replacement and optional glitch
   const renderedArt = useMemo(() => {
     const eye = EYE_CYCLE[eyeIndex];
-    let lines = DIYA_ART.map((line) => line.replace("{E}", eye + " " + eye));
+    const lines = DIYA_ART.map((line) => line.replace("{E}", eye + " " + eye));
 
     if (glitchActive) {
       // Pick 1-2 random lines to glitch

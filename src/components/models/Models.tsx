@@ -50,7 +50,7 @@ const FUNNEL_STAGES: FunnelStage[] = [
     bits: "32-bit",
     reduction: "100%",
     description:
-      "Original model weights at full floating-point precision. A 70B model weighs ~140GB.",
+      "Original model weights at full floating-point precision. A 70B model needs about 280GB for 32-bit weights alone.",
     widthPct: 100,
   },
   {
@@ -72,9 +72,9 @@ const FUNNEL_STAGES: FunnelStage[] = [
   {
     label: "Q4_K_M",
     bits: "4-bit",
-    reduction: "12%",
+    reduction: "12.5%",
     description:
-      "Aggressive quantization with smart rounding. A 70GB model fits in 4GB of RAM.",
+      "Four-bit weights use roughly one eighth of FP32 storage. A 70B model still needs about 35GB for raw weights, plus overhead.",
     widthPct: 28,
   },
 ];
@@ -89,16 +89,16 @@ const MODELS: ModelData[] = [
     provider: "Ollama",
     providerColor: "#34D399",
     whatIsIt:
-      "Google's best efficiency model. Default choice for most tasks.",
-    quant: "Q4_K_M",
+      "A compact Gemma model for local workflows. Choose the exact tag for your hardware.",
+    quant: "Quantized",
     quantLabel: "4-bit quantized",
     ramGB: 9.6,
     maxRamScale: 32,
-    context: "32K",
+    context: "128K",
     toolCalling: true,
-    status: "Active",
+    status: "Local",
     statusColor: "#34D399",
-    statusPulse: true,
+    statusPulse: false,
     bestFor: "General coding, daily driver",
     sizeLabel: "9.6 GB",
     installCmd: "ollama pull gemma4",
@@ -109,46 +109,46 @@ const MODELS: ModelData[] = [
     providerColor: "#34D399",
     whatIsIt:
       "Mixture-of-Experts. 26B params but only activates what it needs.",
-    quant: "Q4_K_M",
+    quant: "Quantized",
     quantLabel: "4-bit quantized",
-    ramGB: 16,
+    ramGB: 19,
     maxRamScale: 32,
-    context: "32K",
+    context: "256K",
     toolCalling: true,
     status: "Pro",
     statusColor: "#A78BFA",
     statusPulse: false,
     bestFor: "Complex reasoning, architecture planning",
-    sizeLabel: "16 GB",
+    sizeLabel: "19 GB",
     installCmd: "ollama pull gemma4:26b",
   },
   {
-    name: "Gemma 4 E4B 8-bit",
+    name: "Gemma 4 E4B · MLX",
     provider: "MLX",
     providerColor: "#FFD700",
     whatIsIt:
-      "Native Metal acceleration via MLX. Maximum throughput on M-series.",
-    quant: "8-bit",
+      "Native Metal acceleration via MLX. Designed for M-series hardware.",
+    quant: "MLX",
     quantLabel: "8-bit quantized",
-    ramGB: 9,
+    ramGB: 9.5,
     maxRamScale: 32,
-    context: "32K",
+    context: "128K",
     toolCalling: true,
     status: "Native",
     statusColor: "#FFD700",
     statusPulse: false,
     bestFor: "Apple Silicon speed, batch processing",
-    sizeLabel: "9 GB",
-    installCmd: "pip install mlx-vlm",
-    note: "Apple Silicon only",
+    sizeLabel: "9.5 GB",
+    installCmd: "ollama pull gemma4:e4b-mlx",
+    note: "Apple Silicon only · Ollama MLX model tag",
   },
   {
     name: "Qwen 3 32B",
     provider: "Ollama",
     providerColor: "#34D399",
     whatIsIt:
-      "Alibaba's long-context beast. Reads entire codebases in one shot.",
-    quant: "Q4_K_M",
+      "A larger Qwen model for reasoning and coding. Context capacity depends on your runtime settings.",
+    quant: "Quantized",
     quantLabel: "4-bit quantized",
     ramGB: 20,
     maxRamScale: 32,
@@ -480,7 +480,7 @@ function ModelCard({
         <div className="mt-auto pt-2">
           <div className="mb-1.5 flex items-center justify-between">
             <span className="text-[11px] font-medium text-text-muted">
-              RAM Usage
+              Approximate model footprint
             </span>
             <span className="text-[11px] font-medium text-text-secondary">
               ~{model.ramGB} GB
@@ -554,7 +554,7 @@ export default function Models() {
             Run quantized models locally
           </h2>
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-text-secondary">
-            How a 70GB model becomes a 4GB powerhouse that runs on your MacBook.
+            Smaller weights. More room to build. Choose a model that fits your hardware and context needs.
           </p>
         </motion.div>
 
@@ -573,6 +573,7 @@ export default function Models() {
           ))}
         </div>
 
+        <p className="mx-auto mt-6 max-w-[1000px] text-xs leading-6 text-text-secondary">Illustrative local options. Footprints are model downloads, not total RAM requirements; context caches and runtime overhead add memory. Check current <a href="https://ollama.com/library/gemma4" className="text-gold underline">Gemma tags</a> and <a href="https://ollama.com/library/qwen3" className="text-gold underline">Qwen tags</a>. Install commands download models only when you run them.</p>
         {/* RAM guide footer */}
         <motion.div
           className="mx-auto mt-10 max-w-[1000px]"

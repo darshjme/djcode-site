@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
@@ -97,7 +99,7 @@ const SECTIONS: DocSection[] = [
     content: (
       <>
         <H2>Installation</H2>
-        <P>One command. Zero config. Works on macOS, Linux, and WSL.</P>
+        <P>Install the CLI, then select a local or hosted provider. Supports macOS, Linux, and WSL.</P>
 
         <H3>Quick Install (recommended)</H3>
         <CodeBlock>{`curl -fsSL https://cli.darshj.ai/install.sh | bash`}</CodeBlock>
@@ -116,7 +118,7 @@ uv run python -m djcode`}</CodeBlock>
               <a href="https://ollama.com" className="text-[#FFD700] hover:text-[#FFE55C] transition-colors underline decoration-[#FFD700]/30 hover:decoration-[#FFD700]">
                 Ollama
               </a>{" "}
-              with at least one model pulled
+              with a model installed for local inference, or an API key for a hosted provider
             </>,
             "macOS or Linux (WSL on Windows)",
           ].map((item, i) => (
@@ -127,7 +129,7 @@ uv run python -m djcode`}</CodeBlock>
           ))}
         </ul>
 
-        <H3>Pull a model</H3>
+        <H3>Local models (optional download)</H3>
         <CodeBlock>{`ollama pull gemma4        # Default, 9.6GB
 ollama pull qwen2.5-coder:7b  # Fast, 4.7GB
 ollama pull dolphin3      # Uncensored, 4.9GB`}</CodeBlock>
@@ -142,14 +144,18 @@ ollama pull dolphin3      # Uncensored, 4.9GB`}</CodeBlock>
       <>
         <H2>Quick Start</H2>
 
-        <H3>Interactive REPL</H3>
+        <H3>Interactive terminal</H3>
         <CodeBlock>{`djcode`}</CodeBlock>
-        <P>Opens the interactive REPL with model info, buddy greeting, and status bar.</P>
+        <P>Opens the interactive terminal interface with model information, tool output, and status. Use djcode --repl for the lightweight REPL.</P>
 
+        <H3>Hosted models with Featherless</H3>
+        <P>Set FEATHERLESS_API_KEY in your shell, then choose a model ID from the Featherless catalog. Hosted inference sends your prompt and selected project context to that provider.</P>
+        <CodeBlock>{`djcode --provider featherless --model MODEL_ID "explain this project"`}</CodeBlock>
+        <P><a href="https://featherless.ai/docs/quickstart-guide" className="text-gold underline">Featherless setup guide ↗</a></P>
         <H3>One-shot mode</H3>
         <CodeBlock>{`djcode "write a REST API with auth in FastAPI"
 djcode --model qwen2.5-coder:7b "binary search in Rust"
-djcode --raw "explain this error" 2>/dev/null`}</CodeBlock>
+djcode --no-thinking "explain this error"`}</CodeBlock>
 
         <H3>CLI flags</H3>
         <TableWrapper>
@@ -168,7 +174,7 @@ djcode --raw "explain this error" 2>/dev/null`}</CodeBlock>
                 ["--thinking / --no-thinking", "Show model reasoning", "on"],
                 ["--bypass-rlhf", "Unrestricted mode", "off"],
                 ["--auto-accept", "Skip tool confirmations", "off"],
-                ["--raw", "No Rich formatting", "off"],
+                ["--army", "Open the specialist overview", "off"],
               ].map(([flag, desc, def]) => (
                 <tr
                   key={flag}
@@ -247,7 +253,7 @@ djcode --raw "explain this error" 2>/dev/null`}</CodeBlock>
             ["/set k=v", "Set a config value"],
             ["/auto", "Toggle auto-accept tool calls"],
             ["/stats [7d|30d]", "Usage dashboard with activity heatmap"],
-            ["/agents", "Show all 22 agents roster"],
+            ["/agents", "Show agent roster"],
             ["/memory", "Show memory tier stats"],
             ["/buddy", "Show your dharmic ASCII buddy"],
             ["/skill list|add|remove", "Manage teachable skills"],
@@ -326,7 +332,7 @@ djcode --raw "explain this error" 2>/dev/null`}</CodeBlock>
     content: (
       <>
         <H2>Agent Registry</H2>
-        <P>22 specialist agents dispatched by semantic routing based on your intent.</P>
+        <P>19 core specialists and 12 content roles. Use the agent roster to select a specialist or start an orchestrated workflow.</P>
 
         <H3>Dev Agents (10)</H3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
@@ -360,6 +366,8 @@ djcode --raw "explain this error" 2>/dev/null`}</CodeBlock>
           ))}
         </div>
 
+        <H3>Architecture and assurance (9)</H3>
+        <P>Chanakya (product strategy), Kavach (security), Aryabhata (data science), Indra (reliability), Kubera (cost), Hermes (integration), Kamadeva (UX), Mitra (legal intelligence), and Varuna (risk). These are AI role profiles; their outputs still need appropriate review.</P>
         <H3>Content Agents (12)</H3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
           {[
@@ -396,7 +404,7 @@ djcode --raw "explain this error" 2>/dev/null`}</CodeBlock>
     content: (
       <>
         <H2>Providers</H2>
-        <P>DJcode supports 9 LLM providers. Local-first by default, cloud when you need it.</P>
+        <P>DJcode supports local, hosted, and custom OpenAI-compatible providers. Local-first by default, cloud when you need it.</P>
         <TableWrapper>
           <table className="w-full text-sm text-left border-collapse">
             <thead>
@@ -417,6 +425,8 @@ djcode --raw "explain this error" 2>/dev/null`}</CodeBlock>
                 ["Groq", "Cloud", "Required"],
                 ["Together AI", "Cloud", "Required"],
                 ["OpenRouter", "Cloud", "Required"],
+                ["Featherless", "Cloud", "FEATHERLESS_API_KEY"],
+                ["Custom", "OpenAI-compatible", "Endpoint-dependent"],
               ].map(([name, type, key]) => (
                 <tr
                   key={name}
@@ -494,8 +504,8 @@ djcode --provider mlx "local Apple Silicon inference"`}</CodeBlock>
         <P>DJcode is a modular Python CLI with 40+ source files.</P>
         <CodeBlock>{`src/djcode/
 \u251C\u2500\u2500 cli.py              # Click entry point
-\u251C\u2500\u2500 repl.py             # Interactive REPL (prompt-toolkit + Rich)
-\u251C\u2500\u2500 provider.py         # 9 providers with auto-fallback
+\u251C\u2500\u2500 repl.py             # Interactive terminal (prompt-toolkit + Rich)
+\u251C\u2500\u2500 provider.py         # Provider registry and routing
 \u251C\u2500\u2500 prompt.py           # Expert system prompt + reasoning framework
 \u251C\u2500\u2500 prompt_enhancer.py  # 8-intent smart prompt enrichment
 \u251C\u2500\u2500 buddy.py            # 5 dharmic ASCII species + 3D + glitch
@@ -557,17 +567,17 @@ djcode --provider mlx "local Apple Silicon inference"`}</CodeBlock>
     content: (
       <>
         <H2>Privacy &amp; Security</H2>
-        <P>DJcode is built on one principle: your code stays on your machine.</P>
+        <P>Local inference keeps prompts on your machine. Choosing a hosted provider sends prompts and selected context to that service. Review its data policy before use.</P>
         <ul className="list-none space-y-3 mb-6 ml-1">
           {[
             "DO_NOT_TRACK=1 set by default",
             "Zero analytics, zero phone-home, zero telemetry",
-            "No account required. No sign-up. No email.",
-            "All inference runs locally via Ollama/MLX",
+            "No DJcode account required; hosted providers have their own accounts and billing",
+            "Local inference is available via Ollama/MLX with an installed model",
             "Cloud providers are opt-in (you bring your own API key)",
-            "Permission system warns before every file write and command execution",
+            "Permission checks apply to tools; auto-accept changes the confirmation behavior",
             "Dangerous command detection (rm -rf, sudo, curl|bash, etc.)",
-            "djcode.md stays in YOUR project directory, not uploaded anywhere",
+            "Project instructions may be included in model requests, including requests to hosted providers",
           ].map((item, i) => (
             <li key={i} className="text-[#999] flex items-start gap-3 text-[15px]">
               <span className="text-[#4ADE80] mt-1 text-xs shrink-0">&#10003;</span>
@@ -661,13 +671,13 @@ export default function DocsPage() {
               style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
             >
               <p className="text-[10px] text-[#555] font-mono leading-relaxed">
-                The only CLI built from<br />ground up for local-first,<br />zero-telemetry, Apple Silicon
+                Built for local-first coding,<br />specialist workflows,<br />and Apple Silicon
               </p>
             </div>
           </nav>
 
           {/* Content */}
-          <main className="flex-1 min-w-0 max-w-3xl">
+          <main id="main-content" className="flex-1 min-w-0 max-w-3xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -691,7 +701,7 @@ export default function DocsPage() {
                 Everything you need to know about the last coding CLI you&apos;ll ever need.
               </p>
               <p className="text-[#555] text-sm mb-10 font-mono">
-                22 agents that ship your product AND make it go viral.
+                Specialist workflows for building, reviewing, and launching your product.
               </p>
             </motion.div>
 
@@ -736,9 +746,9 @@ export default function DocsPage() {
                     GitHub
                   </a>
                   <span className="text-[#333]">|</span>
-                  <a href="/" className="hover:text-white transition-colors">
+                  <Link href="/" className="hover:text-white transition-colors">
                     Home
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -6,7 +6,7 @@ import { Copy, Check } from "lucide-react";
 
 const PRIMARY_CMD = "curl -fsSL https://cli.darshj.ai/install.sh | bash";
 const SOURCE_CMD = "git clone https://github.com/darshjme/djcode && cd djcode && uv sync";
-const PIP_CMD = "pip install djcode";
+const PIP_CMD = "uv tool install git+https://github.com/darshjme/djcode.git";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -59,7 +59,7 @@ export function Install() {
             backgroundClip: "text",
           }}
         >
-          Get started in 10 seconds
+          Your next commit starts here.
         </motion.h2>
 
         {/* Primary install box */}
@@ -74,7 +74,7 @@ export function Install() {
             animation: inView ? "glowPulseStrong 3s ease-in-out infinite" : "none",
           }}
         >
-          <code className="font-mono text-text-code truncate flex-1 text-left" style={{ fontSize: "clamp(0.875rem, 2vw, 1.125rem)" }}>
+          <code className="font-mono text-text-code overflow-x-auto whitespace-nowrap min-w-0 flex-1 text-left" style={{ fontSize: "clamp(0.875rem, 2vw, 1.125rem)" }}>
             <span className="text-green">$</span> {PRIMARY_CMD}
           </code>
           <CopyButton text={PRIMARY_CMD} />
@@ -89,7 +89,7 @@ export function Install() {
         >
           {/* From source */}
           <div className="glass-card px-4 py-3 flex items-center justify-between gap-3">
-            <code className="font-mono text-sm text-text-secondary truncate flex-1 text-left">
+            <code className="font-mono text-sm text-text-secondary overflow-x-auto whitespace-nowrap min-w-0 flex-1 text-left">
               <span className="text-text-muted">#</span>{" "}
               <span className="text-text-muted">From source</span>
               <br />
@@ -101,9 +101,9 @@ export function Install() {
 
           {/* pip */}
           <div className="glass-card px-4 py-3 flex items-center justify-between gap-3">
-            <code className="font-mono text-sm text-text-secondary truncate flex-1 text-left">
+            <code className="font-mono text-sm text-text-secondary overflow-x-auto whitespace-nowrap min-w-0 flex-1 text-left">
               <span className="text-text-muted">#</span>{" "}
-              <span className="text-text-muted">pip</span>
+              <span className="text-text-muted">Isolated install with uv</span>
               <br />
               <span className="text-green">$</span>{" "}
               <span className="text-text-code opacity-70">{PIP_CMD}</span>
@@ -128,7 +128,7 @@ export function Install() {
           >
             Python 3.12+
           </a>{" "}
-          and{" "}
+          with either a hosted API key or a local model via{" "}
           <a
             href="https://ollama.com"
             target="_blank"

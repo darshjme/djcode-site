@@ -27,7 +27,7 @@ const features: Feature[] = [
     icon: HardDrive,
     title: "Local First",
     description:
-      "Your code never leaves your machine. Ollama and MLX run models on your hardware. No cloud. No API keys required.",
+      "Run inference on your hardware with Ollama or MLX. Local models need no cloud API key. Hosted providers are an explicit choice.",
     miniVisual: "lock",
   },
   {
@@ -41,14 +41,14 @@ const features: Feature[] = [
     icon: ShieldCheck,
     title: "Zero Telemetry",
     description:
-      "Not opt-out. Not toggleable. Hardcoded false. We don't collect, transmit, or store anything about you. Ever.",
+      "DJcode has no built-in usage analytics. Sessions and memory are stored locally. Hosted models receive the context you send them.",
     miniVisual: "binary",
   },
   {
     icon: Users,
-    title: "22 Autonomous Agents",
+    title: "Specialist Agents",
     description:
-      "10 dev agents + 12 content agents. Semantic routing dispatches the right specialist. Multi-agent pipelines with shared context bus.",
+      "Coding, debugging, testing, architecture and review specialists. Coordinate work through multi-agent pipelines and a shared context bus.",
     miniVisual: "nodes",
   },
   {
@@ -62,7 +62,7 @@ const features: Feature[] = [
     icon: Database,
     title: "3-Tier Memory",
     description:
-      "Session memory, persistent facts, and ChromaDB semantic vectors. DJcode remembers across sessions. Every conversation makes it smarter for your codebase.",
+      "Session memory, persistent facts, and ChromaDB semantic vectors. DJcode remembers across sessions. Retrieve relevant saved context for your next task.",
     miniVisual: "bars",
   },
 ];

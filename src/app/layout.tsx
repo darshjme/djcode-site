@@ -18,9 +18,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DJcode -- The last coding CLI you'll ever need",
+  title: "DJcode — Your terminal. An entire team.",
   description:
-    "22 agents. 9 providers. 3-tier memory. Zero telemetry. Local-first AI coding CLI that runs on your machine with Ollama and MLX.",
+    "A local-first AI coding agent with specialist orchestration, real tools, persistent memory, and your choice of local or hosted model.",
   keywords: [
     "AI coding CLI",
     "local AI",
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "DarshJ", url: "https://darshj.ai" }],
   openGraph: {
-    title: "DJcode -- The last coding CLI you'll ever need",
+    title: "DJcode — Your terminal. An entire team.",
     description:
-      "22 agents. 9 providers. 3-tier memory. Zero telemetry. Runs on your machine.",
+      "Specialist agents. Real tools. Persistent context. Build from your terminal with local or hosted models.",
     url: "https://cli.darshj.ai",
     siteName: "DJcode",
     type: "website",
@@ -43,9 +43,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "DJcode -- The last coding CLI you'll ever need",
+    title: "DJcode — Your terminal. An entire team.",
     description:
-      "22 agents. 9 providers. 3-tier memory. Zero telemetry. Runs on your machine.",
+      "Specialist agents. Real tools. Persistent context. Build from your terminal with local or hosted models.",
   },
   metadataBase: new URL("https://cli.darshj.ai"),
 };
@@ -61,6 +61,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#0a0a0a" />
       </head>
       <body className="min-h-screen bg-[#0a0a0a] text-[#F5F5F5] antialiased font-sans">
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <Navbar />
         {children}
       </body>

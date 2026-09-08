@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DJcode website
 
-## Getting Started
+The Next.js website for [cli.darshj.ai](https://cli.darshj.ai), presenting the [DJcode CLI](https://github.com/darshjme/djcode). The graphite-and-gold visual system includes an animated terminal, agent workflows, memory diagrams, model guidance, documentation, and installation instructions.
 
-First, run the development server:
+## Development
 
-```bash
+Requires a supported Node.js version and npm.
+
+```sh
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```sh
+npm run lint
+npm run build
+npm start
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Next.js produces a standalone build. Deployment configuration lives in the existing hosting environment. `public/install.sh` is the installer served to visitors and must stay aligned with the CLI installer.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Content accuracy
 
-## Learn More
+The site describes 19 core specialist profiles, 12 content roles, and 17 tools from the CLI registries. Terminal output is illustrative, not a live user session or performance benchmark. Local inference and hosted inference have different data flows. Hardware figures are model footprints, not total runtime memory requirements.
 
-To learn more about Next.js, take a look at the following resources:
+Featherless is an optional hosted provider using its [official OpenAI-compatible API](https://featherless.ai/docs/quickstart-guide). The site uses ordinary official links. No affiliate identifier, referral benefit, partnership, or sponsorship is claimed. A current public referral program could not be verified from official sources; its [sponsorship program](https://featherless.ai/sponsorship) is a separate application process.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Comparison entries link to each tool's official documentation. The website does not claim performance superiority or invented adoption statistics.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT licensed. Copyright 2026 DarshJ.AI.

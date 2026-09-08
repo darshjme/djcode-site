@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useInView } from "framer-motion";
 import { Brain, Terminal, Cloud, Shield } from "lucide-react";
 
 function useCountUp(end: number, duration: number = 1200, active: boolean) {
@@ -45,9 +45,9 @@ function useTypeOut(text: string, duration: number = 400, active: boolean) {
 }
 
 const stats = [
-  { label: "Agents", value: 22, icon: Brain, type: "number" as const },
-  { label: "Commands", value: 38, icon: Terminal, type: "number" as const },
-  { label: "Providers", value: 9, icon: Cloud, type: "number" as const },
+  { label: "Core specialists", value: 19, icon: Brain, type: "number" as const },
+  { label: "Content roles", value: 12, icon: Terminal, type: "number" as const },
+  { label: "Tools", value: 17, icon: Cloud, type: "number" as const },
   { label: "Telemetry", value: 0, icon: Shield, type: "text" as const, text: "Zero" },
 ];
 

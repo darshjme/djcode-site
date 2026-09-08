@@ -29,7 +29,7 @@ export function Footer() {
               DJcode
             </span>
             <span className="text-text-muted text-xs font-mono px-2 py-0.5 rounded border border-white/10">
-              v1.3.0
+              v4.0.1
             </span>
           </div>
 
@@ -55,7 +55,7 @@ export function Footer() {
             </a>
             <span className="text-text-dim">|</span>
             <a
-              href="#"
+              href="/docs"
               className="text-text-secondary hover:text-gold transition-colors duration-150 text-sm"
             >
               Docs

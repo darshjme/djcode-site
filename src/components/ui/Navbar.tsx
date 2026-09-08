@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Star } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 function GithubIcon({ size = 20 }: { size?: number }) {
   return (
@@ -97,7 +99,7 @@ export default function Navbar() {
       >
         <div className="mx-auto max-w-[1280px] h-full px-6 md:px-8 lg:px-12 flex items-center justify-between">
           {/* Logo group */}
-          <a href="/" className="flex flex-col group">
+          <Link href="/" className="flex flex-col group">
             <div className="flex items-center gap-2">
               <span className="font-mono text-2xl font-extrabold tracking-tight">
                 <span
@@ -112,13 +114,13 @@ export default function Navbar() {
                 className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full
                 border border-[#FFD700]/30 text-[#FFD700]/80 bg-[#FFD700]/[0.05]"
               >
-                v2.0.1
+                v4.0.1
               </span>
             </div>
             <span className="text-[10px] text-[#FFD700]/50 font-medium tracking-wide -mt-0.5 ml-0.5">
               by Darshankumar Joshi
             </span>
-          </a>
+          </Link>
 
           {/* Desktop center links */}
           <div className="hidden md:flex items-center gap-0.5">
@@ -126,11 +128,11 @@ export default function Navbar() {
               const sectionId = link.href.replace("#", "");
               const isActive =
                 link.href.startsWith("#") && activeSection === sectionId;
-              const isExternal = !link.href.startsWith("#");
+
               return (
                 <a
                   key={link.href}
-                  href={link.href}
+                  href={link.href.startsWith("#") ? `/${link.href}` : link.href}
                   className={`
                     relative px-4 py-2 text-[13px] font-medium transition-colors duration-200 rounded-lg
                     ${
@@ -174,26 +176,28 @@ export default function Navbar() {
             >
               <GithubIcon size={18} />
               <div className="flex items-center gap-1 text-xs font-medium">
-                <Star className="w-3 h-3 fill-[#FFD700] text-[#FFD700]" />
-                <span>1.2k</span>
+
+                <span>Source</span>
               </div>
             </a>
 
             {/* Install CTA */}
-            <a
-              href="#install"
+            <Link
+              href="/#install"
               className="hidden md:inline-flex items-center px-6 py-2 rounded-lg text-sm font-bold
                 bg-[#FFD700] text-[#0a0a0a] hover:bg-[#FFE55C] transition-all duration-200
                 shadow-[0_2px_16px_rgba(255,215,0,0.15)] hover:shadow-[0_4px_30px_rgba(255,215,0,0.25)]"
             >
               Install
-            </a>
+            </Link>
 
             {/* Mobile hamburger */}
             <button
               className="md:hidden p-2 text-[#999] hover:text-white transition-colors rounded-lg hover:bg-white/[0.04]"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-navigation"
             >
               {mobileOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -205,6 +209,7 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            id="mobile-navigation"
             className="fixed inset-0 z-40 bg-[#0a0a0a]/98 backdrop-blur-2xl flex flex-col items-center justify-center gap-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -224,7 +229,7 @@ export default function Navbar() {
             {NAV_LINKS.map((link, i) => (
               <motion.a
                 key={link.href}
-                href={link.href}
+                href={link.href.startsWith("#") ? `/${link.href}` : link.href}
                 onClick={handleLinkClick}
                 className="text-3xl font-bold text-white hover:text-[#FFD700] transition-colors tracking-tight"
                 initial={{ opacity: 0, y: 30 }}
@@ -241,14 +246,14 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: NAV_LINKS.length * 0.06 + 0.1, duration: 0.3 }}
             >
-              <a
-                href="#install"
+              <Link
+                href="/#install"
                 onClick={handleLinkClick}
                 className="px-10 py-3.5 rounded-xl text-lg font-extrabold bg-[#FFD700] text-[#0a0a0a]
                   hover:bg-[#FFE55C] transition-colors shadow-[0_4px_30px_rgba(255,215,0,0.2)]"
               >
                 Install DJcode
-              </a>
+              </Link>
               <a
                 href="https://github.com/darshjme/djcode"
                 target="_blank"
@@ -257,9 +262,7 @@ export default function Navbar() {
                 className="flex items-center gap-2 text-sm text-[#888] hover:text-white transition-colors"
               >
                 <GithubIcon size={16} />
-                <span>Star on GitHub</span>
-                <Star className="w-3 h-3 fill-[#FFD700] text-[#FFD700]" />
-                <span className="text-xs">1.2k</span>
+                <span>View source on GitHub</span>
               </a>
             </motion.div>
 
@@ -270,9 +273,9 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              The only CLI built from ground up for local-first, zero-telemetry, Apple Silicon.
+              Local-first coding. Your choice of model.
               <br />
-              No competition. Just the tool.
+              Read. Reason. Build. Verify.
             </motion.p>
           </motion.div>
         )}
