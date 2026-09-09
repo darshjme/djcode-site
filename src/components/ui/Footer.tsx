@@ -29,7 +29,7 @@ export function Footer() {
               DJcode
             </span>
             <span className="text-text-muted text-xs font-mono px-2 py-0.5 rounded border border-white/10">
-              v4.2.0
+              v4.2.1
             </span>
           </div>
 

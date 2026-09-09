@@ -513,6 +513,15 @@ export default function Features() {
           <FeatureCard key={feature.title} feature={feature} index={i} />
         ))}
       </div>
+      <div className="mt-8 rounded-2xl border border-white/10 px-6 py-5 sm:flex sm:items-center sm:justify-between sm:gap-8">
+        <div>
+          <h3 className="font-semibold text-text-primary">Start with a considered interface.</h3>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-text-secondary">
+            Seven original design packs cover dashboards, settings, tables and more. Read the guidance offline or bring a reference into your next coding task.
+          </p>
+        </div>
+        <a href="/docs#doc-design-packs" className="mt-4 inline-block shrink-0 text-sm font-semibold text-gold underline underline-offset-4 sm:mt-0">Explore design packs ↗</a>
+      </div>
     </section>
   );
 }

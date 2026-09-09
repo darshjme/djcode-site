@@ -98,7 +98,7 @@ const SECTIONS: DocSection[] = [
     icon: "\uD83D\uDCE6",
     content: (
       <>
-        <H2>Installation · 4.2</H2>
+        <H2>Installation · 4.2.1</H2>
         <P>Install the CLI, then select a local or hosted provider. Supports macOS, Linux, and WSL.</P>
 
         <H3>Quick Install (recommended)</H3>
@@ -288,6 +288,43 @@ djcode --no-thinking "explain this error"`}</CodeBlock>
             </div>
           ))}
         </div>
+      </>
+    ),
+  },
+  {
+    id: "design-packs",
+    title: "Design packs",
+    icon: "◇",
+    content: (
+      <>
+        <H2>Original design guidance</H2>
+        <P>Seven original, MIT-licensed references are bundled with DJcode. Read them offline, add one to a coding task, or export the Markdown guidance and illustrative SVG wireframes. Browsing and exporting need no account or model connection; generating code uses your configured provider.</P>
+        <div className="grid gap-3 sm:grid-cols-2 mb-6">
+          {[
+            ["dashboard", "Operational dashboard"],
+            ["settings", "Settings and preferences"],
+            ["command-palette", "Command palette"],
+            ["onboarding-auth", "Onboarding and authentication"],
+            ["data-table", "Data table"],
+            ["usage-billing", "Usage and billing"],
+            ["empty-error", "Empty and error states"],
+          ].map(([id, title]) => (
+            <div key={id} className="rounded-lg border border-white/10 p-3">
+              <p className="font-semibold text-text-primary">{title}</p>
+              <code className="text-sm text-text-muted">{id}</code>
+            </div>
+          ))}
+        </div>
+        <CodeBlock>{`# List or read a reference without calling a model
+djcode --design-packs
+djcode --design-pack dashboard
+# Add a reference to a coding request
+djcode --design-pack data-table "build a sortable project table"
+# Export into a new directory
+djcode --design-pack dashboard --design-export ./design-reference`}</CodeBlock>
+        <H3>Choose a reference during a session</H3>
+        <P>In the terminal UI or classic REPL, /design lists the references, /design settings selects one, and /design off clears it. Your task and repository conventions still take precedence.</P>
+        <P>Each pack covers layout, responsive behavior, keyboard access, component states and validation. These are design references and original wireframes, not finished application templates or an accessibility certification.</P>
       </>
     ),
   },
