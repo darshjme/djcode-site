@@ -228,9 +228,9 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 0.5 }}
             className="mt-4 text-sm text-[#888] leading-relaxed"
           >
-            Built by{" "}
+            project by{" "}
             <span className="text-[#FFD700] font-medium">Darshan Kumar Joshi</span>{" "}
-            for the developer community.
+
           </motion.p>
 
           {/* Stats line */}

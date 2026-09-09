@@ -115,11 +115,11 @@ export default function Navbar() {
                 className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full
                 border border-[#FFD700]/30 text-[#FFD700]/80 bg-[#FFD700]/[0.05]"
               >
-                v4.1.0
+                v4.2.0
               </span>
             </div>
             <span className="text-[10px] text-[#FFD700]/50 font-medium tracking-wide -mt-0.5 ml-0.5">
-              by Darshan Kumar Joshi
+              project by Darshan Kumar Joshi
             </span>
           </Link>
 
@@ -225,7 +225,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              Built by Darshan Kumar Joshi
+              project by Darshan Kumar Joshi
             </motion.p>
 
             {NAV_LINKS.map((link, i) => (

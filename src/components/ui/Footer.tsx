@@ -29,7 +29,7 @@ export function Footer() {
               DJcode
             </span>
             <span className="text-text-muted text-xs font-mono px-2 py-0.5 rounded border border-white/10">
-              v4.1.0
+              v4.2.0
             </span>
           </div>
 
@@ -64,7 +64,7 @@ export function Footer() {
 
           {/* Right: License */}
           <p className="text-text-muted text-sm">
-            MIT License. Built by Darshan Kumar Joshi.
+            MIT License. project by Darshan Kumar Joshi.
           </p>
         </div>
 

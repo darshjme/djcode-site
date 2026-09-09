@@ -98,11 +98,27 @@ const SECTIONS: DocSection[] = [
     icon: "\uD83D\uDCE6",
     content: (
       <>
-        <H2>Installation</H2>
+        <H2>Installation · 4.2</H2>
         <P>Install the CLI, then select a local or hosted provider. Supports macOS, Linux, and WSL.</P>
 
         <H3>Quick Install (recommended)</H3>
         <CodeBlock>{`curl -fsSL https://cli.darshj.ai/install.sh | bash`}</CodeBlock>
+
+        <P>The managed installer verifies the canonical main-build manifest, successful CI run and wheel checksum. It stages a separate release before switching the current symlink; previous releases and user data remain available.</P>
+        <H3>Startup, updates and recovery</H3>
+        <P>Managed installs apply CI-validated updates at startup by default. Source checkouts remain manual. Network and staging operations have budgets, but dependency installation can take several minutes.</P>
+        <CodeBlock>{`djcode --check                 # runtime and fatal lint checks
+djcode --setup                 # provider, authentication and model
+djcode --update                # explicit managed update
+djcode --update-mode manual    # update only when requested
+djcode --update-mode disabled  # disable updates
+djcode --no-update             # skip updates this invocation
+djcode --rollback              # restore previous; switch to manual`}</CodeBlock>
+        <P>Startup discovers configured models without inference. Missing setup opens provider selection; offline checks retain configuration. Cancelled setup preserves saved settings. Rollback uses the previous managed release and never deletes your facts or sessions.</P>
+        <P><a className="text-[#FFD700] underline" href="https://github.com/darshjme/djcode/blob/main/docs/INSTALLATION-AND-RECOVERY.md">Installation and recovery details</a></P>
+        <H3>Authentication availability</H3>
+        <P>API keys and existing local endpoints are supported. xAI account sign-in requires your own provider-approved public client registration; ordinary installs offer API-key mode. DJcode does not import another coding agent’s tokens or offer direct ChatGPT or Claude subscription login. A discovered model is not proof of successful inference or tool support.</P>
+        <P><a className="text-[#FFD700] underline" href="https://github.com/darshjme/djcode/blob/main/docs/ACCOUNT-AUTH.md">Account authentication restrictions and credential storage</a></P>
 
         <H3>From source</H3>
         <CodeBlock>{`git clone https://github.com/darshjme/djcode
@@ -129,10 +145,10 @@ uv run python -m djcode`}</CodeBlock>
           ))}
         </ul>
 
-        <H3>Local models (optional download)</H3>
-        <CodeBlock>{`ollama pull gemma4        # Default, 9.6GB
-ollama pull qwen2.5-coder:7b  # Fast, 4.7GB
-ollama pull dolphin3      # Uncensored, 4.9GB`}</CodeBlock>
+        <H3>Existing local models</H3>
+        <CodeBlock>{`ollama list
+djcode --setup`}</CodeBlock>
+        <P>Install and setup download no models. Select an existing Ollama, MLX or Colibri runtime, or configure a hosted provider.</P>
       </>
     ),
   },
@@ -244,11 +260,14 @@ djcode --no-thinking "explain this error"`}</CodeBlock>
         </div>
 
         <H3>Tools &amp; Config</H3>
+        <P>15 native model-callable tools cover shell, files, Git, web, tasks, notebooks and spawning specialists. The dispatcher also has 2 internal helpers: agent_status and parallel_execute.</P>
         <div className="space-y-1.5 mb-6">
           {[
             ["/model [name]", "Interactive model picker or switch to specific model"],
             ["/provider [name]", "Switch provider (ollama, mlx, openai, etc.)"],
-            ["/auth", "Configure API keys"],
+            ["/auth", "Choose provider authentication"],
+            ["/check or /lint", "Run installation checks"],
+            ["/update", "Update a managed installation; restart when ready"],
             ["/config", "Show current configuration"],
             ["/set k=v", "Set a config value"],
             ["/auto", "Toggle auto-accept tool calls"],
@@ -527,11 +546,11 @@ djcode-colibri check`}</CodeBlock>
 \u251C\u2500\u2500 voice.py            # Whisper transcription (3 backends)
 \u251C\u2500\u2500 installer.py        # Software installer (brew/apt/pip)
 \u251C\u2500\u2500 config.py           # ~/.djcode/config.json
-\u251C\u2500\u2500 auth.py             # 9 provider auth registry
+\u251C\u2500\u2500 auth.py             # Provider authentication registry
 \u251C\u2500\u2500 status.py           # Bottom toolbar with mode indicator
 \u251C\u2500\u2500 onboarding.py       # First-run wizard
-\u251C\u2500\u2500 updater.py          # Auto-update checker
-\u251C\u2500\u2500 tools/              # 8 async tools (bash, file ops, grep, glob, git, web)
+\u251C\u2500\u2500 updater.py          # Managed CI-validated updates
+\u251C\u2500\u2500 tools/              # 15 native schemas + 2 internal dispatch helpers
 \u251C\u2500\u2500 memory/             # 3-tier memory (session, persistent, semantic)
 \u251C\u2500\u2500 agents/             # 10 dev + 12 content agent registries
 \u2514\u2500\u2500 orchestrator/       # Engine + semantic router + vector context + context bus`}</CodeBlock>
@@ -739,7 +758,7 @@ export default function DocsPage() {
                 }}
               >
                 <p className="text-sm text-[#888] mb-2">
-                  Built with intention by{" "}
+                  project by{" "}
                   <a
                     href="https://darshj.ai"
                     className="text-[#FFD700] hover:text-[#FFE55C] transition-colors font-semibold"
